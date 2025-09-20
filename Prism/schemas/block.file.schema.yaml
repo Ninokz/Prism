@@ -1,0 +1,58 @@
+# -*- coding: utf-8 -*-
+# block.file.schema.yaml
+
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: "Block File (MVP)"
+type: object
+required: [meta, block_type, variants]
+additionalProperties: false
+properties:
+  meta:
+    type: object
+    additionalProperties: false
+    required: [id, name]
+    properties:
+      id:          { type: string }
+      name:        { type: string }
+      description: { type: string }
+
+  block_type:
+    type: string
+    enum: ["Persona","Task","OutputSpecification","Rules","Examples","Context"]
+
+  # 块级兜底（仅作用于该 block）
+  defaults:
+    type: object
+    additionalProperties: true
+
+  variants:
+    type: array
+    minItems: 1
+    items:
+      type: object
+      required: [id]
+      additionalProperties: false
+      properties:
+        id:          { type: string }
+        description: { type: string }
+
+        # 变体级兜底（优先级高于块级 defaults）
+        defaults:
+          type: object
+          additionalProperties: true
+
+        # 模板：二选一（ID 引用或内联）
+        template_id:     { type: string }  # 引用一个注册的模板（由 ID 解析）
+        template_inline: { type: string }  # 直接内联模板字符串
+
+        # 数据契约：二选一（ID 引用或内联）
+        contract_id:     { type: string }  # 引用一个 *.dataschema.yaml（用 ID 解析）
+        contract_inline: { type: object }  # 直接内联 dataschema 文件（即上面的结构）
+
+      allOf:
+        - oneOf:
+            - required: ["template_id"]
+            - required: ["template_inline"]
+        - oneOf:
+            - required: ["contract_id"]
+            - required: ["contract_inline"]
