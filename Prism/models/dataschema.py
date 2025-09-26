@@ -34,11 +34,18 @@ class DataschemaModel(BaseModel, Identifiable):
     def get_schema_default(self, property_name: str, default_value: Any = None) -> Any:
         """
         安全地从 data (JSON Schema) 的 properties 中获取指定属性的 'default' 值。
+        这个版本使用更明确的检查，而不是 try-except。
         """
-        try:
-            return self.data.get("properties", {}).get(property_name, {}).get("default", default_value)
-        except (TypeError, AttributeError):
+        properties = self.data.get("properties")
+        # 1. 检查 'properties' 字段是否存在且为字典
+        if not isinstance(properties, dict):
             return default_value
+        prop_details = properties.get(property_name)
+        # 2. 检查具体属性 (如 'language') 是否存在且为字典
+        if not isinstance(prop_details, dict):
+            return default_value
+        # 3. 安全地获取 'default' 值，如果不存在则返回 default_value
+        return prop_details.get("default", default_value)
 
     def get_all_schema_defaults(self) -> Dict[str, Any]:
         """
