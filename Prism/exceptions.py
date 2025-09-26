@@ -55,3 +55,7 @@ class DataValidationError(ValidationError):
 class ModelError(PrismError):
     """模型属性异常"""
     pass
+
+class CompilationError(PrismError):
+    """编译过程中的基础异常"""
+    pass
