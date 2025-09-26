@@ -51,3 +51,7 @@ class DataValidationError(ValidationError):
             context = {"schema_type": data_type, "error_count": len(errors)}
             
         super().__init__(message, context)
+
+class ModelError(PrismError):
+    """模型属性异常"""
+    pass
