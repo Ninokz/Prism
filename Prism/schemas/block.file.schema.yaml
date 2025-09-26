@@ -1,0 +1,46 @@
+# -*- coding: utf-8 -*-
+# block.file.schema.yaml
+
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: "Block File (MVP)"
+type: object
+required: [meta, block_type, variants]
+additionalProperties: false
+properties:
+  meta:
+    type: object
+    additionalProperties: false
+    required: [id, name]
+    properties:
+      id:          { type: string }
+      name:        { type: string }
+      description: { type: string }
+
+  block_type:
+    type: string
+    enum: ["Persona","Task","OutputSpecification","Rules","Examples","Context"]
+
+  # 块级兜底（仅作用于该 block）
+  defaults:
+    type: object
+    additionalProperties: true
+
+  variants:
+    type: array
+    minItems: 1
+    items:
+      type: object
+      required: [id, template_id] # contract_id 是可选的
+      additionalProperties: false
+      properties:
+        id:          { type: string }
+        description: { type: string }
+        defaults:
+          type: object
+          additionalProperties: true
+        
+        # 模板：必须通过 ID 引用
+        template_id: { type: string }
+
+        # 数据契约：可选，通过 ID 引用
+        contract_id: { type: string }
