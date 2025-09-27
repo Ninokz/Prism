@@ -194,4 +194,4 @@ composition:
 - 所有资源都通过ID进行引用，没有内联。
 - `block` 可以选择性地包含 `contract_id`。
 - `recipe` 清晰地导入依赖，并在 `composition` 中安排顺序。
-- `defaults` 的三层覆盖逻辑也在 `blk_persona` 中得到了体现。
+- `defaults` 的两层覆盖逻辑也在 `blk_persona` 中得到了体现。
