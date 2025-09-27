@@ -11,7 +11,7 @@ from ..models.dataschema import DataschemaModel
 from ..models.ir import IRModel, ResolvedBlock, LiteralContent, RenderSequenceItem
 from ..resolvers.register import ResolverRegister
 from ..compiler.defaults_merger import DefaultsMerger
-from ..exceptions import CompilationError
+from ..exceptions import ModelError
 
 # 中间表示中的 CompiledImport，包含了从 ImportRef 到实际内容的所有解析结果
 @dataclass(frozen=True)
@@ -29,7 +29,21 @@ class RecipeCompiler:
         self._defaults_merger = DefaultsMerger()
 
     def compile(self, recipe: RecipeModel) -> IRModel:
-        ...
+        # 1. 解析 Recipe 中定义的所有 imports，并构建一个扁平化、易于访问的字典。
+        compiled_imports_map = self._resolve_all_imports(recipe)
+
+        # 2. 根据 recipe.composition.sequence 构建最终的渲染序列和聚合的数据契约。
+        render_sequence, aggregated_contracts = self._build_ir_components(
+            recipe.composition.sequence,
+            compiled_imports_map
+        )
+
+        # 3. 组装并返回最终的 IRModel。
+        return IRModel(
+            source_recipe_meta=recipe.meta,
+            render_sequence=render_sequence,
+            aggregated_contracts=aggregated_contracts
+        )
 
     def _resolve_all_imports(self, recipe: RecipeModel) -> Dict[str, CompiledImport]:
         """
@@ -82,4 +96,61 @@ class RecipeCompiler:
             merged_defaults=merged_defaults
         )
 
-    # TODO: _build_ir_components 方法需要实现
+    def _build_ir_components(
+        self, 
+        sequence_items: List[SequenceItem], 
+        compiled_imports_map: Dict[str, CompiledImport]
+    ) -> Tuple[List[RenderSequenceItem], Dict[str, DataschemaModel]]:
+        """
+        遍历 recipe 的 composition.sequence，构建 IR 的 render_sequence 和 aggregated_contracts。
+        """
+        render_sequence: List[RenderSequenceItem] = []
+        aggregated_contracts: Dict[str, DataschemaModel] = {}
+
+        for itm in sequence_items:
+            if itm.literal is not None:
+                # 处理 literal
+                render_sequence.append(LiteralContent(content=itm.literal))
+            elif itm.block_ref is not None:
+                # 处理 block_ref
+                refs_to_process = self._expand_block_ref(itm.block_ref, list(compiled_imports_map.keys()))
+                for block_ref in refs_to_process:
+                    if block_ref not in compiled_imports_map:
+                        raise ModelError(f"在 composition.sequence 中引用的 '{block_ref}' 未在 imports 中定义。")
+
+                    compiled_import = compiled_imports_map[block_ref]
+                    # 为 IR 创建 ResolvedBlock
+                    resolved_block = ResolvedBlock(
+                        source_ref=compiled_import.source_ref,
+                        template_content=compiled_import.template_content,
+                        runtime_contract=compiled_import.contract,
+                        source_block_meta=compiled_import.block.meta,
+                        source_variant_id=compiled_import.variant.id,
+                        merged_defaults=compiled_import.merged_defaults
+                    )
+                    render_sequence.append(resolved_block)
+                    # 如果存在数据契约，则聚合它 (按ID去重)
+                    if compiled_import.contract:
+                        aggregated_contracts[compiled_import.contract.id] = compiled_import.contract
+
+        return render_sequence, aggregated_contracts
+
+    def _expand_block_ref(self, ref: str, available_refs: list[str]) -> list[str]:
+        """
+        将 block_ref 展开为具体的引用列表，并确保正确的自然排序。
+        """
+        # Case 1: 精确匹配 "persona" 或 "tasks[0]"
+        if ref in available_refs:
+            return [ref]
+        
+        # Case 2: 展开引用 "tasks"
+        plural_refs = [key for key in available_refs if key.startswith(f"{ref}[")]
+        if not plural_refs:
+            # 如果未找到，让上层逻辑去抛出一个清晰的 "not found" 错误
+            return [ref]
+
+        # 使用 key 函数进行自然排序，确保 tasks[2] 在 tasks[10] 之前
+        def natural_sort_key(s: str):
+            match = re.search(r'\[(\d+)\]', s)
+            return int(match.group(1)) if match else -1
+        return sorted(plural_refs, key=natural_sort_key)
