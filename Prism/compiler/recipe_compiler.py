@@ -10,7 +10,7 @@ from ..models.block import BlockModel, Variant
 from ..models.dataschema import DataschemaModel
 from ..models.ir import IRModel, ResolvedBlock, LiteralContent, RenderSequenceItem
 from ..resolvers.register import ResolverRegister
-from ..compiler.defaults_merger import DefaultsMerger
+from .defaults_merger import DefaultsMerger
 from ..exceptions import ModelError
 
 # 中间表示中的 CompiledImport，包含了从 ImportRef 到实际内容的所有解析结果
@@ -78,8 +78,7 @@ class RecipeCompiler:
         contract: Optional[DataschemaModel] = None
         if variant.contract_id:
             contract = self._resolver.resolve_dataschema(variant.contract_id)
-
-        # 5. 合并值 - 这里的合并顺序是：Block < Variant，后者优先级更高
+        # 4. 合并值 - 这里的合并顺序是：Block < Variant，后者优先级更高
         merged_defaults = self._defaults_merger.merge(
             block_defaults = block.defaults,
             variant_defaults = variant.defaults

@@ -31,7 +31,7 @@ class ResolvedBlock(BaseModel):
     source_variant_id: str
     merged_defaults: Dict[str, Any] = Field(
         ..., 
-        description="按 Variant > Block > Schema 优先级合并后的最终兜底值"
+        description="按 Variant > Block 优先级合并后的最终兜底值"
     )
 
 class LiteralContent(BaseModel):

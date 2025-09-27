@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field, model_validator
 from typing import List, Optional
 
 from .base import MetaModel, Identifiable
-from exceptions import ModelError
+from ..exceptions import ModelError
 
 class ImportRef(BaseModel):
     block_id: str
