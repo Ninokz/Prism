@@ -78,11 +78,9 @@ class RecipeCompiler:
         contract: Optional[DataschemaModel] = None
         if variant.contract_id:
             contract = self._resolver.resolve_dataschema(variant.contract_id)
-        # 4. 获取 Schema 级别的兜底值
-        schema_defaults = contract.get_all_schema_defaults() if contract else {}
-        # 5. 合并值 - 这里的合并顺序是：Schema < Block < Variant，后者优先级更高
+
+        # 5. 合并值 - 这里的合并顺序是：Block < Variant，后者优先级更高
         merged_defaults = self._defaults_merger.merge(
-            schema_defaults = schema_defaults,
             block_defaults = block.defaults,
             variant_defaults = variant.defaults
         )
