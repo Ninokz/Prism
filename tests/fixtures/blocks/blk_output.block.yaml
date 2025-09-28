@@ -1,0 +1,11 @@
+# PURPOSE: Tests a Block with compile-time defaults but no runtime contract.
+meta:
+  id: blk_output
+  name: "Output Specifications"
+block_type: OutputSpecification
+variants:
+  - id: json_detailed
+    defaults:
+      confidence_score_default: 0.95 # Provided as a compile-time default.
+    template_id: tpl_output_json
+    # No contract_id needed.

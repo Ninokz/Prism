@@ -1,0 +1,13 @@
+# PURPOSE: Defines a true RUNTIME variable required by the task.
+meta:
+  id: ds_code_input
+  name: "Code Input Schema"
+data:
+  $schema: "https://json-schema.org/draft/2020-12/schema"
+  title: "CodeInput"
+  type: object
+  required: [user_code]
+  properties:
+    user_code:
+      type: string
+      description: "The code snippet provided by the user at runtime."

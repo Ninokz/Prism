@@ -1,0 +1,9 @@
+# PURPOSE: Tests a Block that requires a runtime contract.
+meta:
+  id: blk_task
+  name: "Core Task Definitions"
+block_type: Task
+variants:
+  - id: explain_code
+    template_id: tpl_task_explain_code
+    contract_id: ds_code_input # This variant now requires runtime data.
