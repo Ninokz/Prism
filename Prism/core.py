@@ -1,0 +1,70 @@
+# prism/core.py
+
+from dataclasses import dataclass
+
+from .models.dataschema import DataschemaModel
+from .models.block import BlockModel
+from .models.ir import IRModel
+from .models.recipe import RecipeModel
+
+from .resolvers.register import ResolverRegister
+from .compiler.recipe_compiler import RecipeCompiler
+from .generators.jinja_aggregator import JinjaAggregator
+from .generators.pydantic_generator import PydanticGenerator
+from .data_enties import CompilationSources, CompilationArtifacts
+
+from .exceptions import ModelError
+
+from .schemas.schema_validator import (
+    validate_block_file,
+    validate_dataschema_file,
+    validate_recipe_file
+)
+
+def _validate_all(sources: CompilationSources) -> None:
+    """内部辅助函数：验证所有输入的原生数据。"""
+    validate_block_file(sources.blocks)
+    validate_dataschema_file(sources.dataschemas)
+    validate_recipe_file(sources.recipe)
+
+def _build_resolver_from_sources(sources: CompilationSources) -> ResolverRegister:
+    """内部辅助函数：将原生数据源转换为一个填充好的 ResolverRegister。"""
+    # 1. 验证输入数据
+    _validate_all(sources)
+
+    resolver = ResolverRegister()
+    # 2. 注册模板
+    for template_id, content in sources.templates.items():
+        resolver.register_template(template_id, content)
+
+    # 3. 验证并注册所有 Dataschemas
+    for schema_id, data in sources.dataschemas.items():
+        schema_model = DataschemaModel(**data)
+        if not schema_model.id == schema_id:
+            raise ModelError(f"Dataschema ID mismatch: expected '{schema_id}', got '{schema_model.id}'")
+        resolver.register_dataschema(schema_model)
+
+    # 4. 验证并注册所有 Blocks
+    for block_id, data in sources.blocks.items():
+        block_model = BlockModel(**data)
+        if not block_model.meta.id == block_id:
+            raise ModelError(f"Block ID mismatch: expected '{block_id}', got '{block_model.meta.id}'")
+        resolver.register_block(block_model)
+    return resolver
+
+def _compile_recipe_to_ir(sources: CompilationSources) -> IRModel:
+    resolver = _build_resolver_from_sources(sources)
+    recipe_model = RecipeModel(**sources.recipe)
+    compiler = RecipeCompiler(resolver)
+    ir : IRModel = compiler.compile(recipe_model)
+    return ir
+
+def compile_recipe_to_artifacts(sources: CompilationSources) -> CompilationArtifacts:
+    ir = _compile_recipe_to_ir(sources)
+    jinja = JinjaAggregator.aggregate(ir)
+    pydantic = PydanticGenerator.generate(ir)
+
+    return CompilationArtifacts(
+        template_content=jinja,
+        model_code=pydantic
+    )
