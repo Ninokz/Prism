@@ -1,8 +1,3 @@
-"""
-预测试：验证测试夹具的文件读取功能
-这个测试文件的目的是确保我们的 conftest.py 中定义的 fixtures 能够正确加载测试数据文件。
-"""
-
 import pytest
 import yaml
 from pathlib import Path
