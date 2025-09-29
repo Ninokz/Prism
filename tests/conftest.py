@@ -329,3 +329,53 @@ def temp_fixture_files(tmp_path: Path, complete_fixture_set: Dict[str, Any]) -> 
         file_path.write_text(yaml.dump(content, default_flow_style=False), encoding='utf-8')
     
     return temp_dirs
+
+# ===================================================================
+#
+#                      COMPONENT FIXTURES
+#
+# ===================================================================
+
+from Prism.models.block import BlockModel
+from Prism.models.dataschema import DataschemaModel
+from Prism.resolvers.register import ResolverRegister
+from Prism.compiler.recipe_compiler import RecipeCompiler
+
+@pytest.fixture(scope="session")
+def resolver_register(
+    all_blocks: Dict[str, Dict[str, Any]],
+    all_dataschemas: Dict[str, Dict[str, Any]],
+    all_templates: Dict[str, str],
+) -> ResolverRegister:
+    """
+    创建一个 ResolverRegister 实例，并使用 'happy path' fixture 数据
+    通过调用其 register_* 方法来填充它。
+    """
+    # 1. 创建一个空的实例，这符合您源码的设计
+    register = ResolverRegister()
+
+    # 2. 遍历从 YAML 加载的原始字典数据，将它们转换为 Pydantic 模型，然后注册
+    for block_id, block_data in all_blocks.items():
+        # 将字典转换为 BlockModel 实例
+        block_model = BlockModel(**block_data)
+        register.register_block(block_model)
+
+    for schema_id, schema_data in all_dataschemas.items():
+        # 将字典转换为 DataschemaModel 实例
+        schema_model = DataschemaModel(**schema_data)
+        register.register_dataschema(schema_model)
+
+    # 3. 模板是简单的字符串，直接注册即可
+    for template_id, template_content in all_templates.items():
+        register.register_template(template_id, template_content)
+
+    # 4. 返回已完全填充好的 register 实例
+    return register
+
+@pytest.fixture
+def recipe_compiler(resolver_register: ResolverRegister) -> RecipeCompiler:
+    """
+    提供一个配置了 'happy path' 解析器的 RecipeCompiler 实例。
+    (这个 fixture 不需要改变)
+    """
+    return RecipeCompiler(resolver_register=resolver_register)
