@@ -379,3 +379,18 @@ def recipe_compiler(resolver_register: ResolverRegister) -> RecipeCompiler:
     (这个 fixture 不需要改变)
     """
     return RecipeCompiler(resolver_register=resolver_register)
+
+from Prism.models.recipe import RecipeModel
+from Prism.models.ir import IRModel
+
+@pytest.fixture
+def compiled_ir(
+    recipe_compiler: RecipeCompiler,
+    recipe_code_explainer: Dict[str, Any]
+) -> IRModel:
+    """
+    提供一个通过编译 'rec_code_explainer' 生成的、完整的 IRModel 实例。
+    这是测试 JinjaAggregator 的理想输入。
+    """
+    recipe_model = RecipeModel(**recipe_code_explainer)
+    return recipe_compiler.compile(recipe_model)
