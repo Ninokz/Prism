@@ -200,27 +200,33 @@ def badpath_recipes_dir(badpath_fixtures_dir: Path) -> Path:
 
 @pytest.fixture(scope="session")
 def all_bad_blocks(badpath_blocks_dir: Path) -> Dict[str, Dict[str, Any]]:
-    """加载所有无效的 Block 文件，返回 Block ID 到其内容的映射。"""
+    """
+    加载所有无效的 Block 文件。
+    键始终是基于文件名的ID，以确保测试的确定性。
+    """
     bad_blocks = {}
     for file_path in badpath_blocks_dir.glob("*.block.yaml"):
         try:
             content = _load_yaml_file(file_path)
-            # 尝试从内容中获取ID，如果失败则使用文件名作为后备
-            block_id = content.get("meta", {}).get("id", file_path.stem.replace(".block", ""))
+            # 关键修改：始终使用文件名作为键，忽略文件内部的 (可能无效的) id
+            block_id = file_path.stem.replace(".block", "")
             bad_blocks[block_id] = content
         except (FileNotFoundError, yaml.YAMLError):
-            # 在加载阶段忽略无法解析的文件，测试时应能处理
             continue
     return bad_blocks
 
 @pytest.fixture(scope="session")
 def all_bad_dataschemas(badpath_dataschemas_dir: Path) -> Dict[str, Dict[str, Any]]:
-    """加载所有无效的 DataSchema 文件，返回 Schema ID 到其内容的映射。"""
+    """
+    加载所有无效的 DataSchema 文件。
+    键始终是基于文件名的ID，以确保测试的确定性。
+    """
     bad_dataschemas = {}
     for file_path in badpath_dataschemas_dir.glob("*.dataschema.yaml"):
         try:
             content = _load_yaml_file(file_path)
-            schema_id = content.get("meta", {}).get("id", file_path.stem.replace(".dataschema", ""))
+            # 关键修改：始终使用文件名作为键
+            schema_id = file_path.stem.replace(".dataschema", "")
             bad_dataschemas[schema_id] = content
         except (FileNotFoundError, yaml.YAMLError):
             continue
@@ -228,12 +234,16 @@ def all_bad_dataschemas(badpath_dataschemas_dir: Path) -> Dict[str, Dict[str, An
 
 @pytest.fixture(scope="session")
 def all_bad_recipes(badpath_recipes_dir: Path) -> Dict[str, Dict[str, Any]]:
-    """加载所有无效的 Recipe 文件，返回 Recipe ID 到其内容的映射。"""
+    """
+    加载所有无效的 Recipe 文件。
+    键始终是基于文件名的ID，以确保测试的确定性。
+    """
     bad_recipes = {}
     for file_path in badpath_recipes_dir.glob("*.recipe.yaml"):
         try:
             content = _load_yaml_file(file_path)
-            recipe_id = content.get("meta", {}).get("id", file_path.stem.replace(".recipe", ""))
+            # 关键修改：始终使用文件名作为键
+            recipe_id = file_path.stem.replace(".recipe", "")
             bad_recipes[recipe_id] = content
         except (FileNotFoundError, yaml.YAMLError):
             continue
