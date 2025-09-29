@@ -53,7 +53,7 @@ class DataValidationError(ValidationError):
         super().__init__(message, context)
 
 class ModelError(PrismError):
-    """模型属性异常"""
+    """模型异常"""
     pass
 
 class GenerationError(PrismError):

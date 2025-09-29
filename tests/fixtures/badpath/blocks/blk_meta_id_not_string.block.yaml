@@ -1,0 +1,8 @@
+# VIOLATION: The 'id' field within 'meta' must be a string, but is an integer.
+meta:
+  id: 12345
+  name: "Block Meta ID Not String"
+block_type: Task
+variants:
+  - id: v1
+    template_id: t1

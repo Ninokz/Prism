@@ -1,0 +1,8 @@
+# VIOLATION: The 'literal' value in a sequence item must be a string, but is a boolean.
+meta:
+  id: rec_sequence_literal_not_string
+  name: "Recipe with Invalid literal Type"
+imports: {}
+composition:
+  sequence:
+    - literal: true

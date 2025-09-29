@@ -140,11 +140,30 @@ class TestBlockModelValidationWithBadPath:
     @pytest.mark.parametrize(
         "block_id, expected_error_match",
         [
+            # --- 原有的结构性错误测试 ---
             ("blk_empty_variants", r"List should have at least 1 item"),
             ("blk_missing_meta", r"meta\n  Field required"),
             ("blk_missing_block_type", r"block_type\n  Field required"),
-            ("blk_invalid_block_type", r"Input should be 'Persona', 'Task', 'OutputSpecification'"),
-            ("blk_variant_missing_template_id", r"template_id\n  Field required"),
+            ("blk_invalid_block_type", r"Input should be .*'Persona'"), # 使其更通用
+            ("blk_variant_missing_template_id", r"variants\.0\.template_id\n  Field required"),
+
+            # --- 新增的类型和深层约束错误测试 ---
+            (
+                "blk_meta_id_not_string", 
+                r"meta\.id\n  Input should be a valid string"
+            ),
+            (
+                "blk_variants_not_array",
+                r"variants\n  Input should be a valid list"
+            ),
+            (
+                "blk_variant_id_not_string",
+                r"variants\.0\.id\n  Input should be a valid string"
+            ),
+            (
+                "blk_variant_defaults_not_object",
+                r"variants\.0\.defaults\n  Input should be a valid dictionary"
+            ),
         ]
     )
     def test_instantiation_from_bad_data_raises_validation_error(
@@ -157,9 +176,10 @@ class TestBlockModelValidationWithBadPath:
         Tests that BlockModel raises ValidationError for various invalid data files.
 
         Note: This tests Pydantic model validation, not schema validation.
-              Files testing for extra properties (e.g., 'blk_extra_property') are
-              expected to be caught by the schema validator, as the default Pydantic
-              model behavior is to ignore, not forbid, extra fields.
+              Files testing for extra properties (e.g., 'blk_extra_property' or
+              'blk_meta_extra_property') are correctly omitted here, as they should be
+              caught by the schema validator. The default Pydantic model behavior
+              is to ignore, not forbid, extra fields.
         """
         assert block_id in all_bad_blocks, f"Bad block fixture '{block_id}' not found."
         invalid_data = all_bad_blocks[block_id]

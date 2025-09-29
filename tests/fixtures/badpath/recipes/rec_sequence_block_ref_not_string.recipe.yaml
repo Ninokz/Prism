@@ -1,0 +1,11 @@
+# VIOLATION: The 'block_ref' value in a sequence item must be a string, but is a number.
+meta:
+  id: rec_sequence_block_ref_not_string
+  name: "Recipe with Invalid block_ref Type"
+imports:
+  persona:
+    block_id: blk_persona
+    variant_id: expert_teacher
+composition:
+  sequence:
+    - block_ref: 123

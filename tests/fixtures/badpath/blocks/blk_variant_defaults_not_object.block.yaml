@@ -1,0 +1,9 @@
+# VIOLATION: The 'defaults' within a variant must be an object, but is a string.
+meta:
+  id: blk_variant_defaults_not_object
+  name: "Block with Invalid Variant Defaults"
+block_type: Task
+variants:
+  - id: v1
+    template_id: t1
+    defaults: "should-be-an-object"

@@ -173,13 +173,14 @@ class TestRecipeModel:
 
 class TestRecipeModelValidationFromBadFixtures:
     """
-    Tests the RecipeModel's ability to reject invalid data structures
-    by attempting to parse files from the 'badpath' fixtures.
+    通过尝试解析 'badpath' fixtures 中的文件，
+    测试 RecipeModel 拒绝无效数据结构的能力。
     """
 
     @pytest.mark.parametrize(
         "bad_recipe_id, expected_exception, expected_message_part",
         [
+            # --- 原有的测试用例 ---
             (
                 "rec_missing_imports", 
                 ValidationError, 
@@ -191,16 +192,54 @@ class TestRecipeModelValidationFromBadFixtures:
                 "imports.persona.variant_id\n  Field required"
             ),
             (
-                # This tests our custom validator in SequenceItem, which raises a ModelError.
+                # 测试 SequenceItem 中的自定义验证器，它会引发 ModelError
                 "rec_sequence_ambiguous_item", 
                 ModelError, 
                 "Must provide exactly one of 'block_ref' or 'literal'"
             ),
             (
-                # This also tests our custom validator.
+                # 同样测试自定义验证器
                 "rec_sequence_empty_item", 
                 ModelError, 
                 "Must provide exactly one of 'block_ref' or 'literal'"
+            ),
+            
+            # --- 新增的测试用例 ---
+            (
+                # 测试 'persona' import 不是一个对象
+                "rec_import_persona_not_object",
+                ValidationError,
+                "imports.persona\n  Input should be a valid dictionary"
+            ),
+            (
+                # 测试 'tasks' import 不是一个数组/列表
+                "rec_import_tasks_not_array",
+                ValidationError,
+                "imports.tasks\n  Input should be a valid list"
+            ),
+            (
+                # 测试 'tasks' 数组中的项不是一个对象
+                "rec_import_tasks_item_not_object",
+                ValidationError,
+                "imports.tasks.0\n  Input should be a valid dictionary"
+            ),
+            (
+                # 测试 'composition.sequence' 不是一个数组/列表
+                "rec_sequence_not_array",
+                ValidationError,
+                "composition.sequence\n  Input should be a valid list"
+            ),
+            (
+                # 测试 sequence 项中的 'block_ref' 值不是字符串
+                "rec_sequence_block_ref_not_string",
+                ValidationError,
+                "composition.sequence.0.block_ref\n  Input should be a valid string"
+            ),
+            (
+                # 测试 sequence 项中的 'literal' 值不是字符串
+                "rec_sequence_literal_not_string",
+                ValidationError,
+                "composition.sequence.0.literal\n  Input should be a valid string"
             ),
         ]
     )
@@ -212,8 +251,8 @@ class TestRecipeModelValidationFromBadFixtures:
         all_bad_recipes: Dict[str, Dict[str, Any]]
     ):
         """
-        Verifies that specific invalid recipe files raise the correct exception
-        with an informative error message when parsed by RecipeModel.
+        验证特定的无效 recipe 文件在被 RecipeModel 解析时，
+        是否会引发正确的异常并附带信息丰富的错误消息。
         """
         # 获取对应的无效数据
         bad_data = all_bad_recipes[bad_recipe_id]

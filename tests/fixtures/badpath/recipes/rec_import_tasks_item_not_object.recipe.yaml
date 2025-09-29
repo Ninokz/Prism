@@ -1,0 +1,12 @@
+# VIOLATION: Items within the 'tasks' array must be objects, but one is a string.
+meta:
+  id: rec_import_tasks_item_not_object
+  name: "Recipe with Invalid Item in Tasks Import"
+imports:
+  tasks:
+    - "invalid-item" # This item is a string, not an object
+    - block_id: blk_task
+      variant_id: explain_code
+composition:
+  sequence:
+    - block_ref: "tasks[1]"
