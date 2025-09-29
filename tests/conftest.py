@@ -157,9 +157,6 @@ def all_blocks(blocks_dir: Path) -> Dict[str, Dict[str, Any]]:
         blocks[block_id] = _load_yaml_file(file_path)
     return blocks
 
-
-# --- Recipe Fixtures ---
-
 @pytest.fixture(scope="session")
 def recipe_code_explainer(recipes_dir: Path) -> Dict[str, Any]:
     """加载 rec_code_explainer.recipe.yaml"""
@@ -242,6 +239,43 @@ def all_bad_recipes(badpath_recipes_dir: Path) -> Dict[str, Dict[str, Any]]:
             continue
     return bad_recipes
 
+# ===================================================================
+#
+#         PARAMETERIZED FIXTURES FOR BAD PATH DATA
+#
+# ===================================================================
+
+def _load_and_parametrize(directory: Path, file_glob: str) -> list:
+    """Helper to load all YAML files in a directory and create pytest params."""
+    params = []
+    if not directory.exists():
+        return params
+    for filepath in directory.glob(file_glob):
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                data = yaml.safe_load(f)
+                # Mark each test case with the filename for easier debugging
+                params.append(pytest.param(data, id=filepath.name))
+        except (yaml.YAMLError, IOError):
+            # If a file is truly malformed, we can skip it or mark it differently
+            # For now, we'll just add it to see if the parser handles it
+            params.append(pytest.param({"_error": "Could not parse"}, id=f"unparsable-{filepath.name}"))
+    return params
+
+@pytest.fixture(params=_load_and_parametrize(FIXTURES_DIR / "badpath" / "blocks", "*.yaml"))
+def bad_block_data(request):
+    """Provides a single invalid block data dictionary for parametrization."""
+    return request.param
+
+@pytest.fixture(params=_load_and_parametrize(FIXTURES_DIR / "badpath" / "dataschemas", "*.yaml"))
+def bad_dataschema_data(request):
+    """Provides a single invalid dataschema data dictionary for parametrization."""
+    return request.param
+
+@pytest.fixture(params=_load_and_parametrize(FIXTURES_DIR / "badpath" / "recipes", "*.yaml"))
+def bad_recipe_data(request):
+    """Provides a single invalid recipe data dictionary for parametrization."""
+    return request.param
 
 # ===================================================================
 #

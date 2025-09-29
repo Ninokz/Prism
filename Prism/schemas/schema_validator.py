@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# schema_validator.py
+
 from typing import Any, Dict
 
 from .generic_validator import _validate_by_schema

@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# schema_loader.py
+
 from importlib import resources
 import yaml
 from typing import Dict, Any
