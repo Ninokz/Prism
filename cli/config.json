@@ -1,0 +1,14 @@
+{
+  "source_root": "archive",
+  "output_root": "output",
+  "source_subdirs": {
+    "blocks": "blocks",
+    "dataschemas": "dataschemas",
+    "recipes": "recipes",
+    "templates": "templates"
+  },
+  "output_filenames": {
+    "template": "{recipe_name}.prompt.jinja",
+    "model": "{recipe_name}.data_model.py"
+  }
+}

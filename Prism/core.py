@@ -11,7 +11,7 @@ from .resolvers.register import ResolverRegister
 from .compiler.recipe_compiler import RecipeCompiler
 from .generators.jinja_aggregator import JinjaAggregator
 from .generators.pydantic_generator import PydanticGenerator
-from .data_enties import CompilationSources, CompilationArtifacts
+from .entities import CompilationSources, CompilationArtifacts
 
 from .exceptions import ModelError
 
@@ -21,11 +21,24 @@ from .schemas.schema_validator import (
     validate_recipe_file
 )
 
-def _validate_all(sources: CompilationSources) -> None:
-    """内部辅助函数：验证所有输入的原生数据。"""
-    validate_block_file(sources.blocks)
-    validate_dataschema_file(sources.dataschemas)
+def _validate_all(sources: CompilationSources):
+    """
+    对从 loader 传入的所有原生 Python 字典进行 schema 验证。
+    """
+    print("  - Validating all source files against schemas...")
+    
+    # 1. 迭代验证每个 block 文件
+    for block_id, block_data in sources.blocks.items():
+        validate_block_file(block_data)
+
+    # 2. 迭代验证每个 dataschema 文件
+    for schema_id, schema_data in sources.dataschemas.items():
+        validate_dataschema_file(schema_data)
+
+    # 3. 验证单个 recipe 文件
     validate_recipe_file(sources.recipe)
+    
+    print("  - ✅ All source files are valid.")
 
 def _build_resolver_from_sources(sources: CompilationSources) -> ResolverRegister:
     """内部辅助函数：将原生数据源转换为一个填充好的 ResolverRegister。"""

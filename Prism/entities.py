@@ -1,4 +1,4 @@
-# prism/sources.py
+# prism/entities.py
 
 from dataclasses import dataclass, field
 from typing import Dict, Any, Optional

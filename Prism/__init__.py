@@ -1,7 +1,7 @@
 # Prism/__init__.py
 
 from .core import compile_recipe_to_artifacts
-from .data_enties import CompilationSources, CompilationArtifacts
+from .entities import CompilationSources, CompilationArtifacts
 from .exceptions import PrismError, SchemaFileError, ValidationError, SchemaValidationError, DataValidationError, ModelError, GenerationError
 
 __all__ = [

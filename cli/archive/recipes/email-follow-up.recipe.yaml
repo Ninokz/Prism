@@ -1,0 +1,24 @@
+meta:
+  id: email-follow-up
+  name: Professional Email Follow-up
+  description: A recipe to generate a prompt for a professional follow-up email.
+
+imports:
+  persona:
+    block_id: persona
+    variant_id: professional
+  tasks:
+    - block_id: task
+      variant_id: follow-up
+  rules:
+    - block_id: rules
+      variant_id: concise
+
+composition:
+  sequence:
+    - block_ref: "persona"
+    - literal: "\n\n"
+    - block_ref: "tasks[0]" # 引用 tasks 列表的第一个元素
+    - literal: "\n\n"
+    - block_ref: "rules[0]" # 引用 rules 列表的第一个元素
+    - literal: "\n\nBegin the email now."
