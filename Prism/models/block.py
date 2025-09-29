@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # models/block.py
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Any, Dict, List, Literal, Optional
 
 from .base import MetaModel, Identifiable
@@ -27,6 +27,7 @@ class ProvidesDefaultsMixin:
         return self.defaults.get(key, default_value)
 
 class Variant(BaseModel, ProvidesDefaultsMixin):
+    model_config = ConfigDict(extra='forbid')
     id: str
     description: Optional[str] = None
     defaults: Optional[Dict[str, Any]] = None
@@ -34,6 +35,7 @@ class Variant(BaseModel, ProvidesDefaultsMixin):
     contract_id: Optional[str] = None
 
 class BlockModel(BaseModel, Identifiable, ProvidesDefaultsMixin):
+    model_config = ConfigDict(extra='forbid')
     meta: MetaModel
     block_type: BlockType
     defaults: Optional[Dict[str, Any]] = None

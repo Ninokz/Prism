@@ -1,0 +1,11 @@
+# VIOLATION: A sequence item provides neither 'block_ref' nor 'literal'.
+meta:
+  id: rec_sequence_empty_item
+  name: "Recipe with Empty Sequence Item"
+imports:
+  persona:
+    block_id: blk_persona
+    variant_id: expert_teacher
+composition:
+  sequence:
+    - {} # Empty object, violates oneOf

@@ -1,0 +1,7 @@
+# VIOLATION: Required property 'imports' is missing.
+meta:
+  id: rec_missing_imports
+  name: "Recipe Missing Imports"
+composition:
+  sequence:
+    - literal: "This recipe is invalid."

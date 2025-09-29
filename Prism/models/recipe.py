@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
 # models/recipe.py
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 from typing import List, Optional
 
 from .base import MetaModel, Identifiable
 from ..exceptions import ModelError
 
 class ImportRef(BaseModel):
+    model_config = ConfigDict(extra='forbid')
     block_id: str
     variant_id: str
 
 class ImportsModel(BaseModel):
+    model_config = ConfigDict(extra='forbid')
     # 单实例
     persona: Optional[ImportRef] = None
     output_spec: Optional[ImportRef] = None
@@ -22,6 +24,7 @@ class ImportsModel(BaseModel):
     contexts: List[ImportRef] = []
 
 class SequenceItem(BaseModel):
+    model_config = ConfigDict(extra='forbid')
     block_ref: Optional[str] = None
     literal: Optional[str] = None
 
@@ -32,9 +35,11 @@ class SequenceItem(BaseModel):
         return self
 
 class CompositionModel(BaseModel):
+    model_config = ConfigDict(extra='forbid')
     sequence: List[SequenceItem]
 
 class RecipeModel(BaseModel, Identifiable):
+    model_config = ConfigDict(extra='forbid')
     meta: MetaModel
     imports: ImportsModel
     composition: CompositionModel

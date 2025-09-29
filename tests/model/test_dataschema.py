@@ -65,3 +65,41 @@ class TestDataschemaModelValidation:
         with pytest.raises(ValidationError, match="data\n  Input should be a valid dictionary"):
             DataschemaModel(**invalid_data)
 
+class TestDataschemaModelFromBadFixtures:
+    """
+    Tests the DataschemaModel's ability to reject invalid data structures
+    loaded directly from the 'badpath' fixture files.
+    """
+
+    # 我们在这里明确列出要测试的坏文件的ID。
+    # 这样做的好处是，当测试失败时，pytest的输出会清晰地告诉我们是哪个文件出了问题。
+    # 例如：FAILED test_dataschema.py::...::test_instantiation_from_bad_fixtures[ds_missing_data]
+    @pytest.mark.parametrize(
+        "bad_schema_id",
+        [
+            "ds_extra_property",
+            "ds_meta_missing_id",
+            "ds_missing_data",
+        ]
+    )
+    def test_instantiation_from_bad_fixtures_raises_validation_error(
+        self, 
+        bad_schema_id: str, 
+        all_bad_dataschemas: Dict[str, Dict[str, Any]]
+    ):
+        """
+        Verify that attempting to instantiate DataschemaModel with any of the
+        'bad' dataschema fixtures raises a Pydantic ValidationError.
+        """
+        # Arrange: Get the specific bad data dictionary from the collection fixture
+        bad_data = all_bad_dataschemas.get(bad_schema_id)
+        assert bad_data is not None, f"Bad fixture '{bad_schema_id}' not found in all_bad_dataschemas fixture."
+
+        # Act & Assert: Expect a ValidationError when instantiating the model
+        with pytest.raises(ValidationError):
+            try:
+                DataschemaModel(**bad_data)
+            except ValidationError as e:
+                # 打印错误信息，便于调试
+                print(f"\nValidation failed as expected for '{bad_schema_id}':\n{e}")
+                raise # 重新抛出异常，让 pytest.raises 捕获

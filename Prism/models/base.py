@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 # models/meta.py
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from abc import ABC, abstractmethod
 
 class MetaModel(BaseModel):
     """基础元模型类"""
+    model_config = ConfigDict(extra='forbid')
     id: str
     name: str
     description: Optional[str] = None

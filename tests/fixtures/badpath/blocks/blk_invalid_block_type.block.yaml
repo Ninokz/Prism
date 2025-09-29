@@ -1,0 +1,8 @@
+# VIOLATION: 'block_type' is not one of the allowed enum values.
+meta:
+  id: blk_invalid_block_type
+  name: "Block with Invalid Type"
+block_type: "InvalidType"
+variants:
+  - id: v1
+    template_id: t1

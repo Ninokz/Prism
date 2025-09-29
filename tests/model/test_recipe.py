@@ -170,3 +170,57 @@ class TestRecipeModel:
         with pytest.raises(ValidationError, match=f"{missing_field}\n  Field required"):
             RecipeModel(**invalid_data)
 
+
+class TestRecipeModelValidationFromBadFixtures:
+    """
+    Tests the RecipeModel's ability to reject invalid data structures
+    by attempting to parse files from the 'badpath' fixtures.
+    """
+
+    @pytest.mark.parametrize(
+        "bad_recipe_id, expected_exception, expected_message_part",
+        [
+            (
+                "rec_missing_imports", 
+                ValidationError, 
+                "imports\n  Field required"
+            ),
+            (
+                "rec_import_missing_variant_id", 
+                ValidationError, 
+                "imports.persona.variant_id\n  Field required"
+            ),
+            (
+                # This tests our custom validator in SequenceItem, which raises a ModelError.
+                "rec_sequence_ambiguous_item", 
+                ModelError, 
+                "Must provide exactly one of 'block_ref' or 'literal'"
+            ),
+            (
+                # This also tests our custom validator.
+                "rec_sequence_empty_item", 
+                ModelError, 
+                "Must provide exactly one of 'block_ref' or 'literal'"
+            ),
+        ]
+    )
+    def test_bad_recipe_data_raises_appropriate_error(
+        self,
+        bad_recipe_id: str,
+        expected_exception: type,
+        expected_message_part: str,
+        all_bad_recipes: Dict[str, Dict[str, Any]]
+    ):
+        """
+        Verifies that specific invalid recipe files raise the correct exception
+        with an informative error message when parsed by RecipeModel.
+        """
+        # 获取对应的无效数据
+        bad_data = all_bad_recipes[bad_recipe_id]
+
+        # 断言在尝试用无效数据实例化模型时会抛出预期的异常
+        with pytest.raises(expected_exception) as exc_info:
+            RecipeModel(**bad_data)
+
+        # 断言异常信息中包含我们期望的关键内容，以确保错误是可追溯的
+        assert expected_message_part in str(exc_info.value)

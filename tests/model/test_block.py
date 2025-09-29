@@ -130,3 +130,40 @@ class TestBlockModelValidation:
         invalid_data["block_type"] = "InvalidType"
         with pytest.raises(ValidationError, match="'Persona', 'Task', 'OutputSpecification'"):
             BlockModel(**invalid_data)
+
+class TestBlockModelValidationWithBadPath:
+    """
+    Tests Pydantic validation rules on BlockModel using invalid 'badpath' data.
+    This approach is data-driven, directly testing against the invalid fixture files.
+    """
+
+    @pytest.mark.parametrize(
+        "block_id, expected_error_match",
+        [
+            ("blk_empty_variants", r"List should have at least 1 item"),
+            ("blk_missing_meta", r"meta\n  Field required"),
+            ("blk_missing_block_type", r"block_type\n  Field required"),
+            ("blk_invalid_block_type", r"Input should be 'Persona', 'Task', 'OutputSpecification'"),
+            ("blk_variant_missing_template_id", r"template_id\n  Field required"),
+        ]
+    )
+    def test_instantiation_from_bad_data_raises_validation_error(
+        self,
+        all_bad_blocks: Dict[str, Dict[str, Any]],
+        block_id: str,
+        expected_error_match: str
+    ):
+        """
+        Tests that BlockModel raises ValidationError for various invalid data files.
+
+        Note: This tests Pydantic model validation, not schema validation.
+              Files testing for extra properties (e.g., 'blk_extra_property') are
+              expected to be caught by the schema validator, as the default Pydantic
+              model behavior is to ignore, not forbid, extra fields.
+        """
+        assert block_id in all_bad_blocks, f"Bad block fixture '{block_id}' not found."
+        invalid_data = all_bad_blocks[block_id]
+        
+        with pytest.raises(ValidationError, match=expected_error_match):
+            BlockModel(**invalid_data)
+            

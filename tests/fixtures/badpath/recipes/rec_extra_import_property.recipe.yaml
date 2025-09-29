@@ -1,0 +1,14 @@
+# VIOLATION: 'imports' object contains an unknown property 'unknown_import'.
+meta:
+  id: rec_extra_import_property
+  name: "Recipe with Extra Import"
+imports:
+  persona:
+    block_id: blk_persona
+    variant_id: expert_teacher
+  unknown_import: # This should cause a validation error
+    block_id: blk_foo
+    variant_id: bar
+composition:
+  sequence:
+    - block_ref: "persona"

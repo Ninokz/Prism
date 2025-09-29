@@ -1,0 +1,5 @@
+# VIOLATION: 'meta' object is missing the required 'id' property.
+meta:
+  name: "Dataschema Meta Missing ID"
+data:
+  type: object
