@@ -1,0 +1,12 @@
+# PURPOSE: Tests merging when only variant-level defaults are present.
+meta:
+  id: blk_merging_variant_only
+  name: "Tests Merging Variant-Only Defaults"
+# This block has no root-level 'defaults' key.
+block_type: Persona
+variants:
+  - id: variant_with_defaults
+    defaults:
+      tone: "friendly"
+      verbosity: "high"
+    template_id: tpl_persona_expert

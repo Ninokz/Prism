@@ -1,0 +1,10 @@
+# PURPOSE: Tests merging when neither the block nor the variant has defaults.
+meta:
+  id: blk_merging_no_defaults
+  name: "Tests Merging with No Defaults"
+# No block-level 'defaults' key.
+block_type: Task
+variants:
+  - id: variant_no_defaults
+    # No variant-level 'defaults' key.
+    template_id: tpl_task_explain_code

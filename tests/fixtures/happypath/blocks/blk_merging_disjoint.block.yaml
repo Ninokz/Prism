@@ -1,0 +1,12 @@
+# PURPOSE: Tests merging of defaults where block and variant have no overlapping keys.
+meta:
+  id: blk_merging_disjoint
+  name: "Tests Merging Disjoint Defaults"
+block_type: Task
+defaults:
+  api_version: "v1"
+variants:
+  - id: variant_disjoint
+    defaults:
+      retries: 3
+    template_id: tpl_task_explain_code

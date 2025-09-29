@@ -1,0 +1,15 @@
+# PURPOSE: Tests that variant defaults override block defaults for the same key.
+meta:
+  id: blk_merging_override
+  name: "Tests Variant Overriding Block Defaults"
+block_type: Persona
+defaults:
+  language: "Python"      # This value SHOULD BE OVERRIDDEN.
+  log_level: "INFO"       # This value should be kept.
+  timeout: 60             # This value should be kept (integer type).
+variants:
+  - id: variant_override
+    defaults:
+      language: "Go"        # The override value.
+      strict_mode: true     # A new value only from the variant.
+    template_id: tpl_persona_expert # Needs a valid template_id
