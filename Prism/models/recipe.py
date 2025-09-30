@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from typing import List, Optional
 
 from .base import MetaModel, Identifiable
-from ..exceptions import ModelError
+from ..exceptions import RecipePropertyError
 
 class ImportRef(BaseModel):
     """Reference to an imported Block variant"""
@@ -34,7 +34,9 @@ class SequenceItem(BaseModel):
     @model_validator(mode='after')
     def check_exclusive_fields(self) -> 'SequenceItem':
         if not (self.block_ref is None) ^ (self.literal is None):
-            raise ModelError("Must provide exactly one of 'block_ref' or 'literal'")
+            raise RecipePropertyError(
+                message="Each SequenceItem must have exactly one of 'block_ref' or 'literal' set."
+            )
         return self
 
 class CompositionModel(BaseModel):

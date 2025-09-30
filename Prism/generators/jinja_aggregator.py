@@ -36,6 +36,11 @@ class JinjaAggregator:
                         f"Please ensure all non-runtime variables are defined in the block/variant 'defaults'."
                     )
                     raise GenerationError(error_message) from e
+                except jinja2.exceptions.TemplateSyntaxError as e:
+                    error_message = (
+                        f"Syntax error in Jinja template of Block '{item.source_ref}' at line {e.lineno}: {e.message}"
+                    )
+                    raise GenerationError(error_message) from e
         
         return "".join(final_template_parts)
 

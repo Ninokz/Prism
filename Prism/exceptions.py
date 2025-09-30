@@ -81,6 +81,19 @@ class VariantNotFoundError(TemplatedPrismError):
     def __init__(self, block_id: str, variant_id: str):
         super().__init__(block_id=block_id, variant_id=variant_id)
 
+class RecipeError(TemplatedPrismError):
+    pass
+
+class RecipeReferenceError(TemplatedPrismError):
+    message_template = "{model_type} reference '{reference}' could not be resolved"
+    def __init__(self, model_type: str, reference: str):
+        super().__init__(model_type=model_type, reference=reference)
+
+class RecipePropertyError(TemplatedPrismError):
+    message_template = "Recipe property error: {message}"
+    def __init__(self, message: str):
+        super().__init__(message=message)
+
 class GenerationError(PrismError):
     message_template = "Generation error: {message}"
     def __init__(self, message: str):

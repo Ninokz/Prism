@@ -2,7 +2,7 @@
 
 from .core import compile_recipe_to_artifacts
 from .entities import CompilationSources, CompilationArtifacts
-from .exceptions import PrismError, MetaSchemaFileError, SchemaValidationError, DataValidationError, ModelError, GenerationError, ModelNotFoundError
+from .exceptions import PrismError, MetaSchemaFileError, SchemaValidationError, DataValidationError, GenerationError, ModelNotFoundError
 
 __all__ = [
     "compile_recipe_to_artifacts",
@@ -12,7 +12,6 @@ __all__ = [
     "MetaSchemaFileError",
     "SchemaValidationError",
     "DataValidationError",
-    "ModelError",
     "GenerationError",
     "ModelNotFoundError"
 ]

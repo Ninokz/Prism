@@ -11,7 +11,7 @@ from ..models.dataschema import DataschemaModel
 from ..models.ir import IRModel, ResolvedBlock, LiteralContent, RenderSequenceItem
 from ..resolvers.register import ResolverRegister
 from .defaults_merger import DefaultsMerger
-from ..exceptions import ModelNotFoundError
+from ..exceptions import RecipeReferenceError
 
 # 中间表示中的 CompiledImport, 包含了从 ImportRef 到实际内容的所有解析结果
 @dataclass(frozen=True)
@@ -109,7 +109,10 @@ class RecipeCompiler:
                 refs_to_process = self._expand_block_ref(itm.block_ref, list(compiled_imports_map.keys()))
                 for block_ref in refs_to_process:
                     if block_ref not in compiled_imports_map:
-                        raise ModelNotFoundError(model_type="ImportRef", identifier=block_ref)
+                        raise RecipeReferenceError(
+                            model_type="Block",
+                            reference=block_ref
+                        )
 
                     compiled_import = compiled_imports_map[block_ref]
                     # 3. 为 IR 创建 ResolvedBlock

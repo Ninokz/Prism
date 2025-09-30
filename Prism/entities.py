@@ -18,7 +18,6 @@ class CompilationSources:
     # 单独的 Recipe 原生 dict
     recipe: Dict[str, Any] = field(default_factory=dict)
 
-
 @dataclass(frozen=True)
 class CompilationArtifacts:
     """Data container for holding compilation results."""
