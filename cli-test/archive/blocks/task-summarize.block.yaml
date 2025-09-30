@@ -1,0 +1,11 @@
+# blocks/task-summarize.block.yaml
+meta:
+  id: task-summarize
+  name: Ticket Summarization Task
+  description: Defines the task to summarize a support ticket.
+block_type: Task
+variants:
+  - id: with_metadata
+    description: Summarize a ticket using its metadata.
+    template_id: task-summarize-ticket
+    contract_id: support-ticket

@@ -1,0 +1,11 @@
+meta:
+  id: rules
+  name: Rules Block
+  description: Provides constraints and rules for the output.
+block_type: Rules
+variants:
+  - id: concise
+    description: A rule for keeping the output brief.
+    template_id: rules-concise
+    defaults:
+      word_count_limit: 150

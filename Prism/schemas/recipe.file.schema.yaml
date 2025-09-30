@@ -1,0 +1,94 @@
+# -*- coding: utf-8 -*-
+# recipe.file.schema.yaml
+
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: "Recipe File (V1 Final)"
+type: object
+required: [meta, imports, composition]
+additionalProperties: false
+properties:
+  meta:
+    type: object
+    additionalProperties: false
+    required: [id, name]
+    properties:
+      id:          { type: string }
+      name:        { type: string }
+      description: { type: string }
+
+  imports:
+    type: object
+    additionalProperties: false
+    properties:
+      # 单实例 Block
+      persona:
+        type: object
+        required: [block_id, variant_id]
+        properties:
+          block_id:  { type: string }    # 指向 block 的 meta.id
+          variant_id: { type: string }   # 指向该 block 内的变体 id
+
+      output_spec:
+        type: object
+        required: [block_id, variant_id]
+        properties:
+          block_id:  { type: string }
+          variant_id: { type: string }
+
+      # 多实例 Block
+      tasks:
+        type: array
+        items:
+          type: object
+          required: [block_id, variant_id]
+          properties:
+            block_id:  { type: string }
+            variant_id: { type: string }
+
+      rules:
+        type: array
+        items:
+          type: object
+          required: [block_id, variant_id]
+          properties:
+            block_id:  { type: string }
+            variant_id: { type: string }
+
+      examples:
+        type: array
+        items:
+          type: object
+          required: [block_id, variant_id]
+          properties:
+            block_id:  { type: string }
+            variant_id: { type: string }
+
+      contexts:
+        type: array
+        items:
+          type: object
+          required: [block_id, variant_id]
+          properties:
+            block_id:  { type: string }
+            variant_id: { type: string }
+
+  composition:
+    type: object
+    required: [sequence]
+    additionalProperties: false
+    properties:
+      sequence:
+        type: array
+        items:
+          type: object
+          oneOf:
+            - required: ["block_ref"]
+              properties:
+                block_ref: { type: string }
+            - required: ["literal"]
+              properties:
+                literal: { type: string }
+          description: |
+            序列中的每一项都是一个对象，必须包含以下 key 之一：
+            1. `block_ref`: 引用一个在 imports 中定义的 block (e.g., "persona", "tasks", "tasks[0]").
+            2. `literal`: 插入一段静态的文本字符串 (e.g., "\n---\n", "### INSTRUCTIONS:").
