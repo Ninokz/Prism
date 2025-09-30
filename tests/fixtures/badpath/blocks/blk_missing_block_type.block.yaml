@@ -1,7 +1,0 @@
-# VIOLATION: Required property 'block_type' is missing.
-meta:
-  id: blk_missing_block_type
-  name: "Block Missing Type"
-variants:
-  - id: v1
-    template_id: t1

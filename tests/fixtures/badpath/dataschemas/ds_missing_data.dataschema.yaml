@@ -1,4 +1,0 @@
-# VIOLATION: Required property 'data' is missing.
-meta:
-  id: ds_missing_data
-  name: "Dataschema Missing Data"

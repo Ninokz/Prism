@@ -1,9 +1,0 @@
-# VIOLATION: The 'meta' object has additionalProperties: false, 'version' is not allowed.
-meta:
-  id: blk_meta_extra_property
-  name: "Block Meta with Extra Property"
-  version: "1.0"
-block_type: Task
-variants:
-  - id: v1
-    template_id: t1

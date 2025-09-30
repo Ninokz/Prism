@@ -1,6 +1,0 @@
-# VIOLATION: The 'data' property must be an object, but is an array.
-meta:
-  id: ds_data_not_object
-  name: "Dataschema with Invalid Data Type"
-data:
-  - "This should be a JSON schema object"

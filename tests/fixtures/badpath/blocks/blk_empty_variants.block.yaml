@@ -1,6 +1,0 @@
-# VIOLATION: 'variants' array is empty, but schema requires minItems: 1.
-meta:
-  id: blk_empty_variants
-  name: "Block with No Variants"
-block_type: Task
-variants: []

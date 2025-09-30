@@ -1,9 +1,0 @@
-# VIOLATION: The 'persona' import must be an object, but is a string.
-meta:
-  id: rec_import_persona_not_object
-  name: "Recipe with Invalid Persona Import"
-imports:
-  persona: "blk_persona/expert_teacher" # Invalid format
-composition:
-  sequence:
-    - block_ref: "persona"

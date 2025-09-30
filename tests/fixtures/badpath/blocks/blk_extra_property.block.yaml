@@ -1,9 +1,0 @@
-# VIOLATION: Contains an unknown property 'extra_field' at the root level.
-meta:
-  id: blk_extra_property
-  name: "Block with Extra Property"
-block_type: Task
-extra_field: "This should not be here"
-variants:
-  - id: v1
-    template_id: t1

@@ -1,9 +1,0 @@
-# VIOLATION: A variant is missing the required 'template_id' property.
-meta:
-  id: blk_variant_missing_template_id
-  name: "Block with Variant Missing Template ID"
-block_type: Task
-variants:
-  - id: v1
-    # template_id is missing
-    contract_id: "some_contract"

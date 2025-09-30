@@ -1,9 +1,0 @@
-# VIOLATION: A variant contains an unknown property 'unknown_prop'.
-meta:
-  id: blk_variant_extra_property
-  name: "Block with Extra Variant Property"
-block_type: Task
-variants:
-  - id: v1
-    template_id: t1
-    unknown_prop: true

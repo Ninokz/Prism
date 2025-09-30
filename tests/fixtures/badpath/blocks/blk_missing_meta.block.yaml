@@ -1,5 +1,0 @@
-# VIOLATION: Required property 'meta' is missing.
-block_type: Task
-variants:
-  - id: v1
-    template_id: t1

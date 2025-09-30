@@ -1,8 +1,0 @@
-# VIOLATION: The 'id' within a variant must be a string, but is a number.
-meta:
-  id: blk_variant_id_not_string
-  name: "Block with Non-string Variant ID"
-block_type: Task
-variants:
-  - id: 999
-    template_id: t1

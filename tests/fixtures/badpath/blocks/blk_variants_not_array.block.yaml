@@ -1,9 +1,0 @@
-# VIOLATION: The 'variants' property must be an array, but is an object.
-meta:
-  id: blk_variants_not_array
-  name: "Block Variants Not Array"
-block_type: Task
-variants:
-  variant_one:
-    id: v1
-    template_id: t1

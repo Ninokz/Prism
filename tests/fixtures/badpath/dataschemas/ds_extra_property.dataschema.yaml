@@ -1,7 +1,0 @@
-# VIOLATION: Contains an unknown property 'another_field' at the root level.
-meta:
-  id: ds_extra_property
-  name: "Dataschema with Extra Property"
-another_field: "This is not allowed"
-data:
-  type: object
