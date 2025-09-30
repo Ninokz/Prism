@@ -1,0 +1,26 @@
+# dataschemas/support-ticket.dataschema.yaml
+meta:
+  id: support-ticket
+  name: Support Ticket Data Schema
+  description: Defines the data structure for a customer support ticket.
+
+data:
+  type: object
+  properties:
+    customer_name:
+      type: string
+      description: "The customer's full name."
+    ticket_id:
+      type: string
+      description: "The unique identifier for the support ticket."
+    ticket_text:
+      type: string
+      description: "The full, raw text of the customer's support request."
+    urgency:
+      type: string
+      description: "The assessed urgency of the ticket."
+      enum: ["High", "Medium", "Low"]
+  required:
+    - customer_name
+    - ticket_text
+    - urgency

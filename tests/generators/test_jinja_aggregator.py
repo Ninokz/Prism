@@ -148,6 +148,6 @@ class TestJinjaAggregation:
 
         # 验证错误信息是否清晰、有帮助
         error_message = str(exc_info.value)
-        assert "在处理 Block 'persona' 时发现未定义的变量" in error_message
+        assert "Undefined variable found while processing Block 'persona'" in error_message
         assert "'undefined_food' is undefined" in error_message
-        assert "请确保所有非运行时变量都在 block/variant 的 'defaults' 中定义" in error_message
+        assert "Please ensure all non-runtime variables are defined in the block/variant 'defaults'" in error_message

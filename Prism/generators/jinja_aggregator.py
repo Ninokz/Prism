@@ -28,14 +28,14 @@ class JinjaAggregator:
             elif isinstance(item, ResolvedBlock):
                 try:
                     template = env.from_string(item.template_content)
-                    # 只使用编译期兜底值进行渲染
                     partially_rendered_content = template.render(item.merged_defaults)
                     final_template_parts.append(partially_rendered_content)
                 except jinja2.exceptions.UndefinedError as e:
-                    # 捕获 Jinja2 抛出的错误，并包装成我们自己的异常
-                    raise GenerationError(
-                        f"Jinja rendering error in block '{item.source_ref}': {e}"
-                    ) from e
+                    error_message = (
+                        f"Undefined variable found while processing Block '{item.source_ref}': {e.message}. "
+                        f"Please ensure all non-runtime variables are defined in the block/variant 'defaults'."
+                    )
+                    raise GenerationError(error_message) from e
         
         return "".join(final_template_parts)
 

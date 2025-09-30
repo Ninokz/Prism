@@ -13,7 +13,7 @@ from .generators.jinja_aggregator import JinjaAggregator
 from .generators.pydantic_generator import PydanticGenerator
 from .entities import CompilationSources, CompilationArtifacts
 
-from .exceptions import ModelNotFoundError
+from .exceptions import ModelError, ModelIDMismatchError
 
 from .schemas.schema_validator import (
     validate_block_file,
@@ -43,20 +43,35 @@ def _build_resolver_from_sources(sources: CompilationSources) -> ResolverRegiste
     # 3. 验证并注册所有 Dataschemas
     for schema_id, data in sources.dataschemas.items():
         schema_model = DataschemaModel(**data)
-        if not schema_model or not schema_model.id == schema_id:
-            raise ModelNotFoundError(model_type="Dataschema", identifier=schema_id)
+        if not schema_model:
+            raise ModelError(f"Could not parse Dataschema from file for id '{schema_id}'")
+        
+        if schema_model.id != schema_id:
+            raise ModelIDMismatchError(
+                model_type="Dataschema",
+                file_id=schema_id,
+                content_id=schema_model.id
+            )
         resolver.register_dataschema(schema_model)
 
     # 4. 验证并注册所有 Blocks
     for block_id, data in sources.blocks.items():
         block_model = BlockModel(**data)
-        if not block_model or not block_model.meta.id == block_id:
-            raise ModelNotFoundError(model_type="Block", identifier=block_id)
+        if not block_model:
+            raise ModelError(f"Could not parse Block from file for id '{block_id}'")
+        
+        if block_model.id != block_id:
+            raise ModelIDMismatchError(
+                model_type="Block",
+                file_id=block_id,
+                content_id=block_model.id
+            )
         resolver.register_block(block_model)
+        
     return resolver
-
 def _compile_recipe_to_ir(sources: CompilationSources) -> IRModel:
     resolver = _build_resolver_from_sources(sources)
+    print("Resolver built successfully.")
     recipe_model = RecipeModel(**sources.recipe)
     compiler = RecipeCompiler(resolver)
     ir : IRModel = compiler.compile(recipe_model)

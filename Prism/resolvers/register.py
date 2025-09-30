@@ -15,12 +15,15 @@ class ResolverRegister:
         self._templates: Dict[str, str] = {}
     
     def register_block(self, block: BlockModel):
+        print(f"Registering block with ID: {block.id}")
         self._blocks[block.id] = block
 
     def register_dataschema(self, schema: DataschemaModel):
+        print(f"Registering dataschema with ID: {schema.id}")
         self._dataschemas[schema.id] = schema
 
     def register_template(self, template_id: str, content: str):
+        print(f"Registering template with ID: {template_id}")
         self._templates[template_id] = content
 
     def resolve_block(self, block_id: str) -> BlockModel:

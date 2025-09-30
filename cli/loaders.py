@@ -11,44 +11,22 @@ from Prism.exceptions import PrismError
 from config import Config
 
 class LoaderError(PrismError):
-    """与文件加载或解析相关的错误。"""
     pass
 
 class ProjectLoader:
-    """
-    负责从文件系统按需加载项目资产，并将它们打包成 CompilationSources
-    对象，以供核心编译器使用。
-
-    该类内部实现了缓存机制，以避免重复读取共享文件（blocks, dataschemas, templates）。
-    """
     def __init__(self, config: Config):
         self._config = config
-        # 初始化缓存，None 表示尚未加载
         self._templates_cache: Optional[Dict[str, str]] = None
         self._dataschemas_cache: Optional[Dict[str, Dict[str, Any]]] = None
         self._blocks_cache: Optional[Dict[str, Dict[str, Any]]] = None
 
     def load_for_recipe(self, recipe_name: str) -> CompilationSources:
-        """
-        为指定的单个 recipe 加载所有必需的编译源。
-
-        Args:
-            recipe_name: The name of the recipe to load (e.g., "email-follow-up").
-
-        Returns:
-            A CompilationSources object ready for the compiler.
-
-        Raises:
-            LoaderError: If the specified recipe file cannot be found or parsed.
-        """
         print(f"🚀 Loading assets for recipe: '{recipe_name}'...")
         
-        # 1. 使用缓存加载共享资源
         templates = self._get_templates()
         dataschemas = self._get_dataschemas()
         blocks = self._get_blocks()
 
-        # 2. 加载指定的 recipe 文件
         recipe_filename = f"{recipe_name}.recipe.yaml"
         recipe_file_path = self._config.recipes_path / recipe_filename
         
@@ -64,7 +42,6 @@ class ProjectLoader:
 
         print(f"✅ Assets for '{recipe_name}' loaded successfully.")
         
-        # 3. 打包并返回
         return CompilationSources(
             templates=templates,
             dataschemas=dataschemas,
@@ -73,13 +50,8 @@ class ProjectLoader:
         )
 
     def load_compilation_tasks(self) -> Iterator[Tuple[str, CompilationSources]]:
-        """
-        [批处理方法] 加载所有共享资产，并为每个找到的 recipe 生成一个编译任务。
-        这个方法现在会利用缓存，因此与多次调用 `load_for_recipe` 同样高效。
-        """
         print("🚀 Starting batch asset loading process...")
         
-        # 1. 预热所有缓存
         templates = self._get_templates()
         dataschemas = self._get_dataschemas()
         blocks = self._get_blocks()
@@ -111,12 +83,9 @@ class ProjectLoader:
                 )
                 yield recipe_name, sources
             except Exception as e:
-                # 在批处理模式下，可以选择打印警告而不是直接抛出异常
                 print(f"⚠️ Failed to load or parse recipe '{recipe_file}', skipping. Error: {e}")
         
         print("\n✅ All compilation tasks prepared.")
-
-    # --- 缓存支持的私有 Getter ---
 
     def _get_templates(self) -> Dict[str, str]:
         if self._templates_cache is None:
@@ -139,13 +108,10 @@ class ProjectLoader:
             )
         return self._blocks_cache
 
-    # --- 底层文件读取辅助方法 ---
-
     def _load_from_disk(self, dir_path: Path, glob_pattern: str, resource_name: str, reader_func) -> Dict:
-        """通用的从磁盘加载资源的函数。"""
         print(f"  - Loading {resource_name} from disk: {dir_path}")
         if not dir_path.is_dir():
-            print(f"    - Directory not found, skipping.")
+            print(f"    - Directory '{dir_path}' not found, skipping.")
             return {}
 
         loaded_data = {}

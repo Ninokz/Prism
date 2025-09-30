@@ -28,7 +28,7 @@ class TemplatedPrismError(PrismError):
 
 
 class MetaSchemaFileError(TemplatedPrismError):
-    message_template = "Error in file '{filename}'."
+    message_template = "Error in file '{filename}'"
 
     def __init__(self, filename: str, error: str):
         super().__init__(filename=filename, error=error)
@@ -61,9 +61,18 @@ class DataValidationError(TemplatedPrismError):
 class ModelError(PrismError):
     pass
 
+class ModelIDMismatchError(TemplatedPrismError):
+    message_template = (
+        "{model_type} file-based ID '{file_id}' does not match its "
+        "content meta.id '{content_id}'"
+    )
+    def __init__(self, model_type: str, file_id: str, content_id: str):
+        super().__init__(
+            model_type=model_type, file_id=file_id, content_id=content_id
+        )
+
 class ModelNotFoundError(TemplatedPrismError):
     message_template = "{model_type} with identifier '{identifier}' not found"
-
     def __init__(self, model_type: str, identifier: str):
         super().__init__(model_type=model_type, identifier=identifier)
 

@@ -1,0 +1,10 @@
+# blocks/output-spec.block.yaml
+meta:
+  id: output-spec
+  name: Output Specification Block
+  description: Defines the required output format.
+block_type: OutputSpecification
+variants:
+  - id: json_summary
+    description: Require the output to be a JSON summary.
+    template_id: output-json-summary
