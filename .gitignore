@@ -1,3 +1,7 @@
 .vscode/launch.json
 __pycache__/
 __pycache__
+.vscode/
+.pytest_cache/
+prism_prompt_tool.egg-info/
+pyproject.toml
