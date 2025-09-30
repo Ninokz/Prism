@@ -6,7 +6,7 @@ from typing import Dict, Any
 from Prism.resolvers.register import ResolverRegister
 from Prism.models.block import BlockModel
 from Prism.models.dataschema import DataschemaModel
-from Prism.exceptions import ModelError
+from Prism.exceptions import ModelError,ModelNotFoundError
 
 @pytest.fixture
 def resolver_register() -> ResolverRegister:
@@ -76,7 +76,7 @@ class TestResolverRegisterErrorHandling:
     ])
     def test_resolve_not_found_raises_model_error(self, resolver_register: ResolverRegister, resolve_method: str, item_id: str):
         """测试解析不存在的资源时是否会引发 ModelError。"""
-        with pytest.raises(ModelError) as exc_info:
+        with pytest.raises(ModelNotFoundError) as exc_info:
             # 使用 getattr 动态调用解析方法
             getattr(resolver_register, resolve_method)(item_id)
         

@@ -4,7 +4,7 @@
 from typing import Optional, Any, Dict, List
 
 class PrismError(Exception):
-    """Prism工具的基础异常类"""
+    """基础异常类"""
     
     def __init__(self, message: str, context: Optional[Dict[str, Any]] = None):
         super().__init__(message)
@@ -17,9 +17,14 @@ class PrismError(Exception):
             return f"{self.message} (context: {context_str})"
         return self.message
 
-class SchemaFileError(PrismError):
-    """基础 schema 文件异常"""
-    pass
+class MetaSchemaFileError(PrismError):
+    """元 schema 文件异常"""
+    def __init__(self, filename:str, error: str):
+        self.filename = filename
+        self.error = error
+        message = f"Meta schema file error in '{filename}': {error}"
+        context = {"filename": filename, "error": error}
+        super().__init__(message, context)
 
 class ValidationError(PrismError):
     """验证相关的基础异常"""
@@ -52,10 +57,19 @@ class DataValidationError(ValidationError):
             
         super().__init__(message, context)
 
+class GenerationError(PrismError):
+    """生成相关的异常"""
+    pass
+
 class ModelError(PrismError):
     """模型异常"""
     pass
 
-class GenerationError(PrismError):
-    """生成相关的异常"""
-    pass
+class ModelNotFoundError(ModelError):
+    """模型未找到异常"""
+    def __init__(self, model_type: str, identifier: str):
+        self.model_type = model_type
+        self.identifier = identifier
+        message = f"{model_type} with identifier '{identifier}' not found."
+        context = {"model_type": model_type, "identifier": identifier}
+        super().__init__(message, context)

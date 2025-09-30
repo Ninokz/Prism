@@ -6,7 +6,7 @@ import copy
 from Prism.compiler.recipe_compiler import RecipeCompiler
 from Prism.models.recipe import RecipeModel
 from Prism.models.ir import IRModel, ResolvedBlock, LiteralContent
-from Prism.exceptions import ModelError
+from Prism.exceptions import ModelError, ModelNotFoundError
 
 # ===================================================================
 #
@@ -158,8 +158,8 @@ class TestCompilerLogicAndErrors:
         recipe_model = RecipeModel(**bad_recipe_data)
 
         # --- Act & Assert ---
-        # 您的 Resolver 抛出的是 ModelError，所以我们捕获它
-        with pytest.raises(ModelError, match="Block with id 'non_existent_block' not found"):
+        # Resolver 抛出的是 ModelNotFoundError，消息格式为 "Block with identifier 'xxx' not found."
+        with pytest.raises(ModelNotFoundError, match="Block with identifier 'non_existent_block' not found."):
             recipe_compiler.compile(recipe_model)
 
     def test_error_on_import_referencing_non_existent_variant(

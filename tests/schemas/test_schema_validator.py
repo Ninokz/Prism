@@ -12,7 +12,7 @@ from Prism.schemas.schema_validator import (
     is_valid_dataschema_file,
     is_valid_recipe_file,
 )
-from Prism.exceptions import DataValidationError, SchemaFileError
+from Prism.exceptions import DataValidationError, MetaSchemaFileError
 
 class TestSchemaValidators:
     """
@@ -142,8 +142,8 @@ class TestSchemaValidators:
         """
         Verify that if SchemaLoader fails, the validator propagates the SchemaFileError.
         """
-        with patch(schema_loader_method_str, side_effect=SchemaFileError("File is corrupted")):
-            with pytest.raises(SchemaFileError, match="File is corrupted"):
+        with patch(schema_loader_method_str, side_effect=MetaSchemaFileError("dummy_schema.json", "File is corrupted")):
+            with pytest.raises(MetaSchemaFileError, match="File is corrupted"):
                 validator(block_persona)
 
     # Existing test is excellent, keeping it as is.

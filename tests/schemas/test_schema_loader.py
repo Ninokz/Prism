@@ -5,7 +5,7 @@ import yaml
 from unittest.mock import patch, MagicMock
 
 from Prism.schemas.schema_loader import SchemaLoader
-from Prism.exceptions import SchemaFileError
+from Prism.exceptions import MetaSchemaFileError
 
 @pytest.fixture(autouse=True)
 def clear_schema_cache():
@@ -57,12 +57,12 @@ class TestSchemaLoader:
     @patch('importlib.resources.read_text', side_effect=FileNotFoundError("File not found"))
     def test_load_schema_raises_filenotfound(self, mock_read_text: MagicMock):
         """Test that SchemaFileError is raised for a missing file."""
-        with pytest.raises(SchemaFileError, match="Schema file .* not found"):
+        with pytest.raises(MetaSchemaFileError, match=r"Meta schema file error in '.*': File not found"):
             SchemaLoader.get_block_schema()
 
     @patch('importlib.resources.read_text', return_value="key: {invalid yaml")
     def test_load_schema_raises_yaml_error(self, mock_read_text: MagicMock):
         """Test that SchemaFileError is raised for invalid YAML syntax."""
-        with pytest.raises(SchemaFileError, match="Error parsing schema file"):
+        with pytest.raises(MetaSchemaFileError, match="Error parsing schema file"):
             SchemaLoader.get_block_schema()
 
