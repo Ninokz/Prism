@@ -1,0 +1,12 @@
+# blocks/persona-support.block.yaml
+meta:
+  id: persona-support
+  name: Support Persona Block
+  description: Defines the persona of a support agent.
+block_type: Persona
+variants:
+  - id: agent
+    description: A helpful support agent.
+    template_id: persona-support-agent
+    defaults:
+      support_level: "Tier 2" # 编译期变量

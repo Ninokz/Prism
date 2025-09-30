@@ -1,0 +1,12 @@
+meta:
+  id: task
+  name: Task Block
+  description: Defines the core task for the AI to perform.
+block_type: Task
+variants:
+  - id: follow-up
+    description: A task to write a meeting follow-up email.
+    template_id: task-follow-up
+    defaults:
+      recipient_name: "Dr. Evelyn Reed"
+      meeting_topic: "Q3 Project Roadmap"

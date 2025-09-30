@@ -1,0 +1,24 @@
+# recipes/summarize-ticket.recipe.yaml
+meta:
+  id: summarize-ticket
+  name: Summarize Customer Support Ticket
+  description: A recipe to generate a prompt for summarizing a support ticket.
+
+imports:
+  persona:
+    block_id: persona-support
+    variant_id: agent
+  tasks:
+    - block_id: task-summarize
+      variant_id: with_metadata
+  output_spec:
+    block_id: output-spec
+    variant_id: json_summary
+
+composition:
+  sequence:
+    - block_ref: "persona"
+    - literal: "\n\n"
+    - block_ref: "tasks[0]"
+    - literal: "\n\n"
+    - block_ref: "output_spec"

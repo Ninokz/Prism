@@ -1,0 +1,12 @@
+meta:
+  id: persona
+  name: Persona Block
+  description: Defines the persona of the AI assistant.
+block_type: Persona
+variants:
+  - id: professional
+    description: A standard professional persona.
+    template_id: persona-professional
+    defaults:
+      role: "Project Manager"
+      company: "Fk Innovate Inc."
