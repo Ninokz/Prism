@@ -8,13 +8,9 @@ from typing import Dict
 from pydantic import BaseModel, Field, ValidationError
 
 class ConfigError(Exception):
-    """自定义配置错误。"""
     pass
 
 class Config(BaseModel):
-    """
-    项目配置模型，负责加载和管理所有文件路径。
-    """
     source_root: Path = Field(..., description="源文件的根目录")
     output_root: Path = Field(..., description="输出文件的根目录")
     source_subdirs: Dict[str, str] = Field(..., description="源文件子目录映射")
@@ -22,7 +18,6 @@ class Config(BaseModel):
 
     @classmethod
     def from_json(cls, path: Path) -> 'Config':
-        """从 JSON 文件加载配置。"""
         if not path.is_file():
             raise ConfigError(f"配置文件不存在: {path}")
         try:

@@ -10,15 +10,7 @@ from ..exceptions import (
 )
 
 def _validate_metaschema(meta_schema: Dict[str, Any], schema_type: str) -> None:
-    """验证给定的meta_schema是否符合JSON Schema规范
-    
-    Args:
-        meta_schema: 要验证的meta_schema字典
-        schema_type: schema类型标识符，用于错误报告
-        
-    Raises:
-        SchemaValidationError: 如果meta_schema无效
-    """
+    """Verify that the provided meta-schema is itself valid."""
     try:
         jsonschema.Draft202012Validator.check_schema(meta_schema)
     except jsonschema.SchemaError as e:
@@ -28,13 +20,13 @@ def _validate_metaschema(meta_schema: Dict[str, Any], schema_type: str) -> None:
         ) from e
 
 def _safe_get_identifier(data: Dict[str, Any]) -> str | None:
-    """尝试从data数据中安全地获取block_id"""
     try:
         return data['meta']['id']
     except (KeyError, TypeError):
         return None
 
-def _validate_by_schema(data_type: str, raw_data: Dict[str, Any], file_schema: Dict[str, Any]) -> None:
+def validate_by_schema(data_type: str, raw_data: Dict[str, Any], file_schema: Dict[str, Any]) -> None:
+    """Validate raw_data against the provided file_schema using JSON Schema."""
     try:
         _validate_metaschema(file_schema, data_type)
 

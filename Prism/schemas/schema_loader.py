@@ -12,6 +12,7 @@ _BLOCK_FILE_SCHEMA_YAML = 'block.file.schema.yaml'
 _RECIPE_FILE_SCHEMA_YAML = 'recipe.file.schema.yaml'
 
 class SchemaLoader:
+    """Loads and caches JSON schemas for validating Prism files."""
     _schemas: Dict[str, Dict[str, Any]] = {}
     
     @classmethod

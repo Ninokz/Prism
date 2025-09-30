@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-# models/meta.py
+# models/base.py
 
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from abc import ABC, abstractmethod
 
 class MetaModel(BaseModel):
-    """基础元模型类"""
+    """Metadata model containing basic identification information"""
     model_config = ConfigDict(extra='forbid')
     id: str
     name: str
@@ -30,6 +30,7 @@ class MetaModel(BaseModel):
         return self.id == other.id
 
 class Identifiable(ABC):
+    """An abstract base class for models that have a MetaModel and can be identified by its ID."""
     meta: MetaModel
     @property
     def id(self) -> str:

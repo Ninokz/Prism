@@ -3,7 +3,7 @@
 import pytest
 from typing import Dict, Any
 
-from Prism.schemas.generic_validator import _validate_by_schema, _validate_metaschema, _safe_get_identifier
+from Prism.schemas.generic_validator import validate_by_schema, _validate_metaschema, _safe_get_identifier
 from Prism.exceptions import DataValidationError, SchemaValidationError
 
 # A minimal valid schema for testing purposes
@@ -57,7 +57,7 @@ class TestValidateBySchema:
         """Test successful validation of valid data against a valid schema."""
         valid_data = {"name": "John Doe"}
         try:
-            _validate_by_schema("test_data", valid_data, VALID_SCHEMA)
+            validate_by_schema("test_data", valid_data, VALID_SCHEMA)
         except DataValidationError:
             pytest.fail("Valid data should not raise DataValidationError")
 
@@ -65,7 +65,7 @@ class TestValidateBySchema:
         """Test that invalid data raises DataValidationError."""
         invalid_data = {"age": 30} # Missing 'name'
         with pytest.raises(DataValidationError) as exc_info:
-            _validate_by_schema("test_data", invalid_data, VALID_SCHEMA)
+            validate_by_schema("test_data", invalid_data, VALID_SCHEMA)
         
         error = exc_info.value
         
@@ -82,7 +82,7 @@ class TestValidateBySchema:
         """Test that the identifier is correctly captured in the exception."""
         invalid_data = {"meta": {"id": "user-profile"}, "age": 30}
         with pytest.raises(DataValidationError) as exc_info:
-            _validate_by_schema("test_data", invalid_data, VALID_SCHEMA)
+            validate_by_schema("test_data", invalid_data, VALID_SCHEMA)
         
         # FIX: Access 'identifier' via the 'context' dictionary.
         assert exc_info.value.context.get('identifier') == "user-profile"
@@ -91,5 +91,5 @@ class TestValidateBySchema:
         """Test that an invalid schema raises SchemaValidationError."""
         valid_data = {"name": "John Doe"}
         with pytest.raises(SchemaValidationError):
-            _validate_by_schema("test_data", valid_data, INVALID_SCHEMA)
+            validate_by_schema("test_data", valid_data, INVALID_SCHEMA)
 

@@ -5,10 +5,7 @@ from typing import Dict, Any, Optional
 
 @dataclass(frozen=True)
 class CompilationSources:
-    """
-    一个纯粹的数据容器，用于存放从文件系统加载的所有原生资源。
-    与 Prism 核心库之间新的、简单的契约。
-    """
+    """Data container for holding raw compilation sources."""
     # Key: template_id (通常是文件名), Value: 模板文件内容
     templates: Dict[str, str] = field(default_factory=dict)
     
@@ -24,8 +21,6 @@ class CompilationSources:
 
 @dataclass(frozen=True)
 class CompilationArtifacts:
-    """
-    一个用于封装编译产物的数据类，作为 Facade 函数的返回类型。
-    """
+    """Data container for holding compilation results."""
     template_content: str
     model_code: Optional[str] = None

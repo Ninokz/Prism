@@ -8,11 +8,13 @@ from .base import MetaModel, Identifiable
 from ..exceptions import ModelError
 
 class ImportRef(BaseModel):
+    """Reference to an imported Block variant"""
     model_config = ConfigDict(extra='forbid')
     block_id: str
     variant_id: str
 
 class ImportsModel(BaseModel):
+    """ Represents the imports section of a Recipe, containing references to various Block types"""
     model_config = ConfigDict(extra='forbid')
     # 单实例
     persona: Optional[ImportRef] = None
@@ -24,6 +26,7 @@ class ImportsModel(BaseModel):
     contexts: List[ImportRef] = []
 
 class SequenceItem(BaseModel):
+    """ An item in the composition sequence, either a block reference or a literal string """
     model_config = ConfigDict(extra='forbid')
     block_ref: Optional[str] = None
     literal: Optional[str] = None
@@ -35,10 +38,12 @@ class SequenceItem(BaseModel):
         return self
 
 class CompositionModel(BaseModel):
+    """ The composition section of a Recipe, defining the sequence of blocks and literals """
     model_config = ConfigDict(extra='forbid')
     sequence: List[SequenceItem]
 
 class RecipeModel(BaseModel, Identifiable):
+    """ The top-level Recipe model, encapsulating metadata, imports, and composition """
     model_config = ConfigDict(extra='forbid')
     meta: MetaModel
     imports: ImportsModel

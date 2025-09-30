@@ -8,6 +8,7 @@ from ..models.dataschema import DataschemaModel
 from ..exceptions import ModelNotFoundError
 
 class ResolverRegister:
+    """register and resolve models by their identifiers."""
     def __init__(self):
         self._blocks: Dict[str, BlockModel] = {}
         self._dataschemas: Dict[str, DataschemaModel] = {}

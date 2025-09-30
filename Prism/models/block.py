@@ -10,23 +10,17 @@ from ..exceptions import VariantNotFoundError
 BlockType = Literal["Persona", "Task", "OutputSpecification", "Rules", "Examples", "Context"]
 
 class ProvidesDefaultsMixin:
-    """
-    一个 Mixin 类，为拥有 'defaults: Optional[Dict[str, Any]]' 属性的模型
-    提供安全的访问方法。
-    """
+    """ a Mixin to provide default value retrieval functionality """
     # 这是一个类型注解，告诉类型检查器，使用此 Mixin 的类应该有这个属性
     defaults: Optional[Dict[str, Any]]
 
     def get_default(self, key: str, default_value: Any = None) -> Any:
-        """
-        安全地从 'defaults' 字典中获取一个值。
-        如果 'defaults' 本身是 None，或者 key 不存在，则返回指定的 default_value。
-        """
         if self.defaults is None:
             return default_value
         return self.defaults.get(key, default_value)
 
 class Variant(BaseModel, ProvidesDefaultsMixin):
+    """variant of a Block, each with its own template and optional contract"""
     model_config = ConfigDict(extra='forbid')
     id: str
     description: Optional[str] = None
@@ -35,6 +29,7 @@ class Variant(BaseModel, ProvidesDefaultsMixin):
     contract_id: Optional[str] = None
 
 class BlockModel(BaseModel, Identifiable, ProvidesDefaultsMixin):
+    """block definition with multiple variants"""
     model_config = ConfigDict(extra='forbid')
     meta: MetaModel
     block_type: BlockType
