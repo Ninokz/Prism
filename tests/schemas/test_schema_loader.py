@@ -55,10 +55,18 @@ class TestSchemaLoader:
         mock_read_text.assert_called_once() # Still called only once
 
     @patch('importlib.resources.read_text', side_effect=FileNotFoundError("File not found"))
-    def test_load_schema_raises_filenotfound(self, mock_read_text: MagicMock):
-        """Test that SchemaFileError is raised for a missing file."""
-        with pytest.raises(MetaSchemaFileError, match=r"Meta schema file error in '.*': File not found"):
+    def test_load_schema_raises_filenotfound_and_has_correct_context(self, mock_read_text: MagicMock):
+        """
+        Test that MetaSchemaFileError is raised and contains the correct attributes.
+        """
+        # 1. 只断言异常类型，不检查消息
+        with pytest.raises(MetaSchemaFileError) as exc_info:
             SchemaLoader.get_block_schema()
+
+        # 2. 捕获异常对象 (exc_info.value) 并检查其属性
+        assert exc_info.value.message == "Error in file 'block.file.schema.yaml'"
+        assert exc_info.value.context['filename'] == 'block.file.schema.yaml'
+        assert exc_info.value.context['error'] == 'File not found'
 
     @patch('importlib.resources.read_text', return_value="key: {invalid yaml")
     def test_load_schema_raises_yaml_error(self, mock_read_text: MagicMock):

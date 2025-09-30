@@ -6,7 +6,7 @@ from typing import Dict, Any
 from Prism.resolvers.register import ResolverRegister
 from Prism.models.block import BlockModel
 from Prism.models.dataschema import DataschemaModel
-from Prism.exceptions import ModelError,ModelNotFoundError
+from Prism.exceptions import ModelNotFoundError
 
 @pytest.fixture
 def resolver_register() -> ResolverRegister:

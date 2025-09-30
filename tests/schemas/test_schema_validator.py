@@ -37,7 +37,6 @@ class TestSchemaValidators:
             pytest.fail(f"Validator {validator.__name__} raised unexpected error for {valid_data_fixture}: {e}")
 
     # === Bad Path Tests (Refactored and Enhanced) ===
-    
     # REFACTORED & ENHANCED: This test now uses the new parametrized fixture and checks error details.
     def test_validate_block_file_on_badpath_provides_detailed_errors(self, bad_block_data: Dict[str, Any]):
         """
@@ -47,10 +46,11 @@ class TestSchemaValidators:
         with pytest.raises(DataValidationError) as exc_info:
             validate_block_file(bad_block_data)
         
-        # NEW: Assert that the error object contains meaningful information.
-        assert exc_info.value.errors, "The 'errors' list in the exception should not be empty."
-        assert isinstance(exc_info.value.errors[0], str), "Error messages should be strings."
-        assert len(exc_info.value.errors[0]) > 0, "Error messages should not be empty."
+        # FIX: Access 'errors' via the 'context' dictionary.
+        errors = exc_info.value.context.get('errors')
+        assert errors, "The 'errors' list in the exception's context should not be empty."
+        assert isinstance(errors[0], str), "Error messages should be strings."
+        assert len(errors[0]) > 0, "Error messages should not be empty."
 
     # REFACTORED & ENHANCED: Similar improvements for dataschemas.
     def test_validate_dataschema_file_on_badpath_provides_detailed_errors(self, bad_dataschema_data: Dict[str, Any]):
@@ -58,8 +58,10 @@ class TestSchemaValidators:
         with pytest.raises(DataValidationError) as exc_info:
             validate_dataschema_file(bad_dataschema_data)
         
-        assert exc_info.value.errors, "The 'errors' list should not be empty."
-        assert isinstance(exc_info.value.errors[0], str)
+        # FIX: Access 'errors' via the 'context' dictionary.
+        errors = exc_info.value.context.get('errors')
+        assert errors, "The 'errors' list in the context should not be empty."
+        assert isinstance(errors[0], str)
 
     # REFACTORED & ENHANCED: Similar improvements for recipes.
     def test_validate_recipe_file_on_badpath_provides_detailed_errors(self, bad_recipe_data: Dict[str, Any]):
@@ -67,8 +69,10 @@ class TestSchemaValidators:
         with pytest.raises(DataValidationError) as exc_info:
             validate_recipe_file(bad_recipe_data)
         
-        assert exc_info.value.errors, "The 'errors' list should not be empty."
-        assert isinstance(exc_info.value.errors[0], str)
+        # FIX: Access 'errors' via the 'context' dictionary.
+        errors = exc_info.value.context.get('errors')
+        assert errors, "The 'errors' list in the context should not be empty."
+        assert isinstance(errors[0], str)
 
     # NEW: A specific test to ensure the identifier is captured in the error.
     def test_validate_functions_include_identifier_in_error(self, all_bad_blocks: Dict[str, Any]):
@@ -82,16 +86,19 @@ class TestSchemaValidators:
         with pytest.raises(DataValidationError) as exc_info:
             validate_block_file(invalid_data)
             
-        # 验证 identifier 属性被正确设置
-        assert exc_info.value.identifier == "blk_empty_variants"
+        # 验证 identifier 属性被正确设置在 context 中
+        identifier = exc_info.value.context.get('identifier')
+        assert identifier == "blk_empty_variants"
         
-        # 【修复】验证 identifier 的值出现在最终的字符串输出中。
-        # 这种检查不依赖于具体的格式（如方括号），因此更加健壮。
+        # 验证 identifier 的值出现在最终的字符串输出中。
+        # 这个断言是正确的，因为它不关心格式，只关心存在性。
         error_string = str(exc_info.value)
-        assert exc_info.value.identifier in error_string
+        assert identifier in error_string
         
-        # 【可选的更严格检查】我们可以检查 pytest 错误输出中看到的 "identifier=..." 模式
-        assert f"identifier={exc_info.value.identifier}" in error_string
+        # 【修复】验证 __str__ 输出中 context 部分的实际格式。
+        # 根据 PrismError 的 __str__ 方法，格式应为 "  - key: repr(value)"
+        expected_context_line = f"  - identifier: {repr(identifier)}"
+        assert expected_context_line in error_string
 
     # === Tests for `is_valid_*` functions (Refactored and Enhanced) ===
 

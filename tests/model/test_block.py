@@ -6,7 +6,7 @@ from typing import Dict, Any
 
 from Prism.models.block import BlockModel, Variant
 from Prism.models.base import MetaModel
-from Prism.exceptions import ModelError
+from Prism.exceptions import VariantNotFoundError
 
 class TestVariantModel:
     """Tests for the Variant class."""
@@ -86,8 +86,8 @@ class TestBlockModel:
     def test_get_variant_by_id_raises_error_for_unknown_id(self, block_persona: Dict[str, Any]):
         """Test that getting a non-existent variant raises a ModelError."""
         block = BlockModel(**block_persona)
-        
-        with pytest.raises(ModelError) as exc_info:
+
+        with pytest.raises(VariantNotFoundError) as exc_info:
             block.get_variant_by_id("non_existent_variant")
         
         # Check if the error message is informative

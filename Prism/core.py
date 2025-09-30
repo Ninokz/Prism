@@ -13,7 +13,7 @@ from .generators.jinja_aggregator import JinjaAggregator
 from .generators.pydantic_generator import PydanticGenerator
 from .entities import CompilationSources, CompilationArtifacts
 
-from .exceptions import ModelError
+from .exceptions import ModelNotFoundError
 
 from .schemas.schema_validator import (
     validate_block_file,
@@ -53,15 +53,15 @@ def _build_resolver_from_sources(sources: CompilationSources) -> ResolverRegiste
     # 3. 验证并注册所有 Dataschemas
     for schema_id, data in sources.dataschemas.items():
         schema_model = DataschemaModel(**data)
-        if not schema_model.id == schema_id:
-            raise ModelError(f"Dataschema ID mismatch: expected '{schema_id}', got '{schema_model.id}'")
+        if not schema_model or not schema_model.id == schema_id:
+            raise ModelNotFoundError(model_type="Dataschema", identifier=schema_id)
         resolver.register_dataschema(schema_model)
 
     # 4. 验证并注册所有 Blocks
     for block_id, data in sources.blocks.items():
         block_model = BlockModel(**data)
-        if not block_model.meta.id == block_id:
-            raise ModelError(f"Block ID mismatch: expected '{block_id}', got '{block_model.meta.id}'")
+        if not block_model or not block_model.meta.id == block_id:
+            raise ModelNotFoundError(model_type="Block", identifier=block_id)
         resolver.register_block(block_model)
     return resolver
 

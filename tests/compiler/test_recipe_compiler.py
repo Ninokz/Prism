@@ -6,7 +6,7 @@ import copy
 from Prism.compiler.recipe_compiler import RecipeCompiler
 from Prism.models.recipe import RecipeModel
 from Prism.models.ir import IRModel, ResolvedBlock, LiteralContent
-from Prism.exceptions import ModelError, ModelNotFoundError
+from Prism.exceptions import ModelNotFoundError, VariantNotFoundError
 
 # ===================================================================
 #
@@ -136,11 +136,12 @@ class TestCompilerLogicAndErrors:
         recipe_model = RecipeModel(**bad_recipe_data)
 
         # --- Act & Assert ---
-        with pytest.raises(ModelError) as exc_info:
+        with pytest.raises(ModelNotFoundError) as exc_info:
             recipe_compiler.compile(recipe_model)
         
         assert "non_existent_ref" in str(exc_info.value)
-        assert "未在 imports 中定义" in str(exc_info.value) or "not defined in imports" in str(exc_info.value).lower()
+        assert "ImportRef" in str(exc_info.value)
+        assert "not found" in str(exc_info.value)
 
     def test_error_on_import_referencing_non_existent_block(
         self,
@@ -148,19 +149,23 @@ class TestCompilerLogicAndErrors:
         recipe_code_explainer: Dict[str, Any]
     ):
         """
-        测试当 imports 引用一个不存在的 block_id 时，是否会抛出异常。
-        这个异常应该来自 Resolver。
+        测试当 imports 引用一个不存在的 block_id 时，是否会抛出 ModelNotFoundError。
         """
         # --- Arrange ---
-        # 使用 deepcopy 保证数据隔离
         bad_recipe_data = copy.deepcopy(recipe_code_explainer)
         bad_recipe_data["imports"]["persona"]["block_id"] = "non_existent_block"
         recipe_model = RecipeModel(**bad_recipe_data)
 
         # --- Act & Assert ---
-        # Resolver 抛出的是 ModelNotFoundError，消息格式为 "Block with identifier 'xxx' not found."
-        with pytest.raises(ModelNotFoundError, match="Block with identifier 'non_existent_block' not found."):
+        # 1. 捕获异常实例到 exc_info 变量中
+        with pytest.raises(ModelNotFoundError) as exc_info:
             recipe_compiler.compile(recipe_model)
+
+        assert exc_info.value.context['model_type'] == 'Block'
+        assert exc_info.value.context['identifier'] == 'non_existent_block'
+
+        expected_message = "Block with identifier 'non_existent_block' not found"
+        assert exc_info.value.message == expected_message
 
     def test_error_on_import_referencing_non_existent_variant(
         self,
@@ -178,7 +183,7 @@ class TestCompilerLogicAndErrors:
         recipe_model = RecipeModel(**bad_recipe_data)
         
         # --- Act & Assert ---
-        with pytest.raises(ModelError) as exc_info:
+        with pytest.raises(VariantNotFoundError) as exc_info:
             recipe_compiler.compile(recipe_model)
 
         # 现在这个测试应该会按预期工作

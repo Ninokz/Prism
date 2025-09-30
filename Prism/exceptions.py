@@ -4,72 +4,77 @@
 from typing import Optional, Any, Dict, List
 
 class PrismError(Exception):
-    """基础异常类"""
-    
     def __init__(self, message: str, context: Optional[Dict[str, Any]] = None):
         super().__init__(message)
         self.message = message
         self.context = context or {}
-    
+
     def __str__(self) -> str:
+        class_name = self.__class__.__name__
+        output = f"{class_name}: {self.message}"
         if self.context:
-            context_str = ", ".join(f"{k}={v}" for k, v in self.context.items())
-            return f"{self.message} (context: {context_str})"
-        return self.message
+            context_str = "\n".join(
+                f"  - {key}: {repr(value)}" for key, value in self.context.items()
+            )
+            output += f"\n[Context]:\n{context_str}"
+        return output
+    
+class TemplatedPrismError(PrismError):
+    message_template: str = "An unspecified error occurred."
+    def __init__(self, **kwargs: Any):
+        formatted_message = self.message_template.format(**kwargs)
+        super().__init__(formatted_message, context=kwargs)
 
-class MetaSchemaFileError(PrismError):
-    """元 schema 文件异常"""
-    def __init__(self, filename:str, error: str):
-        self.filename = filename
-        self.error = error
-        message = f"Meta schema file error in '{filename}': {error}"
-        context = {"filename": filename, "error": error}
-        super().__init__(message, context)
 
-class ValidationError(PrismError):
-    """验证相关的基础异常"""
-    pass
+class MetaSchemaFileError(TemplatedPrismError):
+    """元 schema 文件处理异常。"""
+    message_template = "Error in file '{filename}'"
 
-class SchemaValidationError(ValidationError):
-    """JSON Schema验证失败"""
+    def __init__(self, filename: str, error: str):
+        super().__init__(filename=filename, error=error)
+
+class SchemaValidationError(TemplatedPrismError):
+    """JSON Schema验证失败。"""
+    message_template = "{schema_type} schema validation failed with {error_count} error(s)"
+
     def __init__(self, schema_type: str, errors: List[str]):
-        self.schema_type = schema_type
-        self.errors = errors
-        context = {"schema_type": schema_type, "error_count": len(errors), "errors": errors}
+        error_summary = '; '.join(errors)
         super().__init__(
-            f"{schema_type} schema validation failed: {'; '.join(errors)}",
-            context
+            schema_type=schema_type, 
+            errors=errors, 
+            error_count=len(errors),
+            error_summary=error_summary
         )
 
-class DataValidationError(ValidationError):
-    """数据验证失败的基础异常"""
+class DataValidationError(TemplatedPrismError):
+    """数据验证失败。"""
+    message_template = "{data_type} data{identifier_part} validation failed"
+
     def __init__(self, data_type: str, errors: List[str], identifier: Optional[str] = None):
-        self.data_type = data_type
-        self.errors = errors
-        self.identifier = identifier
-        
-        if identifier:
-            message = f"{data_type} data '{identifier}' validation failed: {'; '.join(errors)}"
-            context = {"schema_type": data_type, "identifier": identifier, "error_count": len(errors)}
-        else:
-            message = f"{data_type} data validation failed: {'; '.join(errors)}"
-            context = {"schema_type": data_type, "error_count": len(errors)}
-            
-        super().__init__(message, context)
+        identifier_part = f" '{identifier}'" if identifier else ""
+        super().__init__(
+            data_type=data_type,
+            identifier=identifier,
+            errors=errors,
+            error_count=len(errors),
+            identifier_part=identifier_part
+        )
+
+class ModelError(PrismError):
+    pass
+
+class ModelNotFoundError(TemplatedPrismError):
+    message_template = "{model_type} with identifier '{identifier}' not found"
+
+    def __init__(self, model_type: str, identifier: str):
+        super().__init__(model_type=model_type, identifier=identifier)
+
+class VariantNotFoundError(TemplatedPrismError):
+    message_template = "Variant '{variant_id}' not found in Block '{block_id}'"
+
+    def __init__(self, block_id: str, variant_id: str):
+        super().__init__(block_id=block_id, variant_id=variant_id)
 
 class GenerationError(PrismError):
     """生成相关的异常"""
     pass
-
-class ModelError(PrismError):
-    """模型异常"""
-    pass
-
-class ModelNotFoundError(ModelError):
-    """模型未找到异常"""
-    def __init__(self, model_type: str, identifier: str):
-        self.model_type = model_type
-        self.identifier = identifier
-        message = f"{model_type} with identifier '{identifier}' not found."
-        context = {"model_type": model_type, "identifier": identifier}
-        super().__init__(message, context)

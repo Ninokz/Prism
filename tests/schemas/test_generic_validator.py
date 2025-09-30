@@ -68,10 +68,15 @@ class TestValidateBySchema:
             _validate_by_schema("test_data", invalid_data, VALID_SCHEMA)
         
         error = exc_info.value
-        assert error.data_type == "test_data"
-        assert error.identifier is None # No 'meta.id' in test data
-        assert len(error.errors) == 1
-        assert "'name' is a required property" in error.errors[0]
+        
+        # FIX: Access all values from the 'context' dictionary.
+        assert error.context.get('data_type') == "test_data"
+        assert error.context.get('identifier') is None # No 'meta.id' in test data
+        
+        errors_list = error.context.get('errors')
+        assert errors_list is not None
+        assert len(errors_list) == 1
+        assert "'name' is a required property" in errors_list[0]
 
     def test_validation_failure_with_identifier(self):
         """Test that the identifier is correctly captured in the exception."""
@@ -79,7 +84,8 @@ class TestValidateBySchema:
         with pytest.raises(DataValidationError) as exc_info:
             _validate_by_schema("test_data", invalid_data, VALID_SCHEMA)
         
-        assert exc_info.value.identifier == "user-profile"
+        # FIX: Access 'identifier' via the 'context' dictionary.
+        assert exc_info.value.context.get('identifier') == "user-profile"
 
     def test_validation_raises_schema_error_for_invalid_schema(self):
         """Test that an invalid schema raises SchemaValidationError."""

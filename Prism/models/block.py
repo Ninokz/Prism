@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from typing import Any, Dict, List, Literal, Optional
 
 from .base import MetaModel, Identifiable
-from ..exceptions import ModelError
+from ..exceptions import VariantNotFoundError
 
 BlockType = Literal["Persona", "Task", "OutputSpecification", "Rules", "Examples", "Context"]
 
@@ -45,4 +45,4 @@ class BlockModel(BaseModel, Identifiable, ProvidesDefaultsMixin):
         for v in self.variants:
             if v.id == variant_id:
                 return v
-        raise ModelError(f"在 Block '{self.id}' 中未找到 ID 为 '{variant_id}' 的变体。")
+        raise VariantNotFoundError(block_id=self.id, variant_id=variant_id)
