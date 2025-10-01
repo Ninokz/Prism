@@ -2,6 +2,7 @@
 # prism/exceptions.py
 
 from typing import Optional, Any, Dict, List
+import rich
 
 class PrismError(Exception):
     def __init__(self, message: str, context: Optional[Dict[str, Any]] = None):

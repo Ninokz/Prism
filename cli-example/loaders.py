@@ -32,8 +32,8 @@ class ProjectLoader:
             blocks=blocks
         )
 
-    def load_for_recipe(self, recipe_name: str) -> CompilationTask:
-        print(f"🚀 Loading assets for recipe: '{recipe_name}'...")
+    def load_recipe(self, recipe_name: str) -> CompilationTask:
+        print(f"🚀 Loading recipe: '{recipe_name}'...")
         recipe_filename = f"{recipe_name}.recipe.yaml"
         recipe_file_path = self._config.recipes_path / recipe_filename
         if not recipe_file_path.is_file():
@@ -44,7 +44,7 @@ class ProjectLoader:
                  raise LoaderError(f"Recipe file '{recipe_filename}' is empty or invalid.")
         except Exception as e:
             raise LoaderError(f"Failed to load or parse recipe '{recipe_file_path}': {e}") from e
-        print(f"✅ Assets for '{recipe_name}' loaded successfully.")
+        print(f"✅ '{recipe_name}' loaded successfully.")
         return CompilationTask(
             recipe_name=recipe_name,
             sources=recipe_data
