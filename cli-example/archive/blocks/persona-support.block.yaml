@@ -9,4 +9,4 @@ variants:
     description: A helpful support agent.
     template_id: persona-support-agent
     defaults:
-      support_level: "Tier 2" # 编译期变量
+      support_level: "Tier 2"

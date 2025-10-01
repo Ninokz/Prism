@@ -40,4 +40,4 @@ class BlockModel(BaseModel, Identifiable, ProvidesDefaultsMixin):
         for v in self.variants:
             if v.id == variant_id:
                 return v
-        raise VariantNotFoundError(block_id=self.id, variant_id=variant_id)
+        raise VariantNotFoundError(block_id=self.id, variant_id=variant_id, available_variants=[v.id for v in self.variants])

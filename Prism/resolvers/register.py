@@ -5,7 +5,7 @@ from typing import Dict
 
 from ..models.block import BlockModel
 from ..models.dataschema import DataschemaModel
-from ..exceptions import ModelNotFoundError
+from ..exceptions import ResolutionError
 
 class ResolverRegister:
     """register and resolve models by their identifiers."""
@@ -28,15 +28,15 @@ class ResolverRegister:
 
     def resolve_block(self, block_id: str) -> BlockModel:
         if block_id not in self._blocks:
-            raise ModelNotFoundError(model_type='Block', identifier=block_id)
+            raise ResolutionError(asset_type='Block', identifier=block_id)
         return self._blocks[block_id]
 
     def resolve_dataschema(self, schema_id: str) -> DataschemaModel:
         if schema_id not in self._dataschemas:
-            raise ModelNotFoundError(model_type='Dataschema', identifier=schema_id)
+            raise ResolutionError(asset_type='Dataschema', identifier=schema_id)
         return self._dataschemas[schema_id]
 
     def resolve_template(self, template_id: str) -> str:
         if template_id not in self._templates:
-            raise ModelNotFoundError(model_type='Template', identifier=template_id)
+            raise ResolutionError(asset_type='Template', identifier=template_id)
         return self._templates[template_id]
