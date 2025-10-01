@@ -14,9 +14,12 @@ class CompilationSources:
     
     # Key: block_id, Value: 从 YAML 加载的原生 dict
     blocks: Dict[str, Dict[str, Any]] = field(default_factory=dict)
-    
-    # 单独的 Recipe 原生 dict
-    recipe: Dict[str, Any] = field(default_factory=dict)
+
+@dataclass(frozen=True)
+class CompilationTask:
+    """Data container for a single compilation task."""
+    recipe_name: str
+    sources: Dict[str, Any]
 
 @dataclass(frozen=True)
 class CompilationArtifacts:

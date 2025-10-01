@@ -16,7 +16,7 @@ class PrismError(Exception):
             context_str = "\n".join(
                 f"  - {key}: {repr(value)}" for key, value in self.context.items()
             )
-            output += f"\n[Context]:\n{context_str}."
+            output += f"\n[Context]:\n{context_str}"
         return output
     
 class TemplatedPrismError(PrismError):
@@ -26,32 +26,31 @@ class TemplatedPrismError(PrismError):
         formatted_message = self.message_template.format(**kwargs)
         super().__init__(formatted_message, context=kwargs)
 
-
 class MetaSchemaFileError(TemplatedPrismError):
-    message_template = "Error in file '{filename}'"
+    message_template = "Failed to load or parse file '{filename}'. Reason: {error}"
 
     def __init__(self, filename: str, error: str):
         super().__init__(filename=filename, error=error)
 
-class SchemaValidationError(TemplatedPrismError):
-    message_template = "{schema_type} schema validation failed with {error_count} error(s)"
+class InternalSchemaError(TemplatedPrismError):
+    message_template = "{internal_schema_file_name} schema validation failed with {error_count} error(s)"
 
-    def __init__(self, schema_type: str, errors: List[str]):
+    def __init__(self, internal_schema_file_name: str, errors: List[str]):
         error_summary = '; '.join(errors)
         super().__init__(
-            schema_type=schema_type, 
+            internal_schema_file_name=internal_schema_file_name, 
             errors=errors, 
             error_count=len(errors),
             error_summary=error_summary
         )
 
-class DataValidationError(TemplatedPrismError):
+class AssetValidationError(TemplatedPrismError):
     message_template = "{data_type} data{identifier_part} validation failed"
 
-    def __init__(self, data_type: str, errors: List[str], identifier: Optional[str] = None):
+    def __init__(self, asset_file_name: str, errors: List[str], identifier: Optional[str] = None):
         identifier_part = f" '{identifier}'" if identifier else ""
         super().__init__(
-            data_type=data_type,
+            asset_file_name=asset_file_name,
             identifier=identifier,
             errors=errors,
             error_count=len(errors),
