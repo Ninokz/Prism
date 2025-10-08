@@ -3,7 +3,7 @@
 
 from pathlib import Path
 
-from ..exception import ProjectilitializationError
+from CLI.exception import ProjectilitializationError
 
 class ProjectInitializer:
     DIRECTORIES_TO_CREATE = ['blocks', 'dataschemas', 'recipes', 'templates','outputs']

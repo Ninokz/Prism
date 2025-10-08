@@ -1,0 +1,46 @@
+# -----------------------------------------------------------------------------
+# Recipe: {{ recipe_name }}
+# -----------------------------------------------------------------------------
+# A Recipe defines the final assembly of Blocks to create a complete prompt
+# template. It specifies which blocks to use and in what order.
+# -----------------------------------------------------------------------------
+
+meta:
+  id: "{{ recipe_name }}"
+  name: "A descriptive name for {{ recipe_name }}"
+  description: "A brief description of what this recipe accomplishes."
+
+# 'imports' section declares all the blocks that this recipe will use.
+imports:
+  # Example of a single-instance block (e.g., there's only one persona).
+  persona:
+    block_id: "persona-professional"
+    variant_id: "default"
+
+  # Example of a multi-instance block (e.g., a prompt can have multiple tasks).
+  tasks:
+    - block_id: "task-summarize"
+      variant_id: "default"
+    # - block_id: "task-translate"
+    #   variant_id: "to-french"
+
+  # Other available import types (uncomment to use):
+  # rules:
+  #   - block_id: "rules-concise"
+  #     variant_id: "default"
+  #
+  # output_spec:
+  #   block_id: "output-spec-json"
+  #   variant_id: "default"
+
+# 'composition' defines the final order and arrangement of the imported blocks.
+composition:
+  sequence:
+    # Each item is either a reference to an import or a literal string.
+    - block_ref: "persona"
+    - literal: "\n\n### INSTRUCTIONS\n"
+    - block_ref: "tasks" # This will expand to all items in the 'tasks' import
+    # - block_ref: "tasks[0]" # You can also reference a specific item
+    # - block_ref: "rules"
+    # - block_ref: "output_spec"
+
