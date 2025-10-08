@@ -1,8 +1,8 @@
 
 from pathlib import Path
-from actions.initializer import ProjectInitializer
-from actions.scaffolder import Scaffolder
-from actions.loader import ProjectLoader
+from CLI.actions.initializer import ProjectInitializer
+from CLI.actions.scaffolder import Scaffolder
+from CLI.actions.loader import ProjectLoader
 
 from Prism.core import compile_recipe_to_artifacts
 from Prism.exceptions import PrismError
