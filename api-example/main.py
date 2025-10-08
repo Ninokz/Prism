@@ -1,14 +1,9 @@
-import json
 from pathlib import Path
-from typing import Dict
-
 from config import Config
 from loaders import ProjectLoader
 
-from pathlib import Path
 from Prism.core import compile_recipe_to_artifacts
 from Prism.exceptions import PrismError
-import rich
 from Prism.rich_handler import handle_exception
 
 SCRIPT_DIR = Path(__file__).parent.resolve()
