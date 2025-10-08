@@ -110,7 +110,6 @@ class RecipeCompiler:
                 for block_ref in refs_to_process:
                     if block_ref not in compiled_imports_map:
                         raise RecipeReferenceError(
-                            model_type="Block",
                             reference=block_ref
                         )
 

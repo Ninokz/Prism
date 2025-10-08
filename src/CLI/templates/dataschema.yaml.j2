@@ -1,0 +1,31 @@
+# -----------------------------------------------------------------------------
+# Dataschema: {{ dataschema_name }}
+# -----------------------------------------------------------------------------
+# A Dataschema defines the contract for runtime data required by a prompt.
+# It uses the JSON Schema standard.
+# -----------------------------------------------------------------------------
+
+meta:
+  id: "{{ dataschema_name }}"
+  name: "A descriptive name for {{ dataschema_name }}"
+  description: "Defines the data structure needed for..."
+
+# The 'data' field contains your JSON Schema definition.
+data:
+  type: "object"
+  properties:
+    # Example of a required string property.
+    user_input:
+      type: "string"
+      description: "The main input from the user."
+    
+    # Example of an optional property with a default value.
+    language:
+      type: "string"
+      description: "The target language for the output."
+      default: "English"
+
+  # Defines which properties are mandatory at runtime.
+  required:
+    - "user_input"
+

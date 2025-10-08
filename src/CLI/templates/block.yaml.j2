@@ -1,0 +1,36 @@
+# -----------------------------------------------------------------------------
+# Block: {{ block_name }}
+# -----------------------------------------------------------------------------
+# A Block is a reusable component of a prompt. It defines a piece of content
+# and its variations.
+# -----------------------------------------------------------------------------
+
+meta:
+  id: "{{ block_name }}"
+  name: "A descriptive name for {{ block_name }}"
+  description: "A brief description of what this block does."
+
+# The type of the block helps organize and validate its role in a recipe.
+# Available types: Persona, Task, OutputSpecification, Rules, Examples, Context
+block_type: Task
+
+# Block-level defaults are applied to all variants unless overridden.
+# defaults:
+#   language: "English"
+
+variants:
+  # Each block must have at least one variant.
+  - id: "default"
+    description: "The default variant for this block."
+    
+    # Points to the template file for this variant.
+    # The file should be located in the 'templates' directory.
+    template_id: "{{ block_name}}.jinja"
+
+    # (Optional) Link to a dataschema if this variant requires runtime data.
+    # contract_id: "my-data-contract"
+
+    # (Optional) Variant-specific defaults override block-level defaults.
+    # defaults:
+    #   tone: "professional"
+

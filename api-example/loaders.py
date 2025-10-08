@@ -5,7 +5,7 @@ import yaml
 from pathlib import Path
 from typing import Dict, Any, Iterator, Tuple, Optional
 
-from Prism.entities import CompilationSources
+from Prism.entities import CompilationSources,CompilationTask
 from Prism.exceptions import PrismError
 
 from config import Config
@@ -20,72 +20,35 @@ class ProjectLoader:
         self._dataschemas_cache: Optional[Dict[str, Dict[str, Any]]] = None
         self._blocks_cache: Optional[Dict[str, Dict[str, Any]]] = None
 
-    def load_for_recipe(self, recipe_name: str) -> CompilationSources:
-        print(f"🚀 Loading assets for recipe: '{recipe_name}'...")
-        
+    def load_for_compilation_source(self) -> CompilationSources:
+        print("🚀 Loading assets for compilation...") 
         templates = self._get_templates()
         dataschemas = self._get_dataschemas()
         blocks = self._get_blocks()
+        print("✅ Assets for compilation loaded successfully.")
+        return CompilationSources(
+            templates=templates,
+            dataschemas=dataschemas,
+            blocks=blocks
+        )
 
+    def load_recipe(self, recipe_name: str) -> CompilationTask:
+        print(f"🚀 Loading recipe: '{recipe_name}'...")
         recipe_filename = f"{recipe_name}.recipe.yaml"
         recipe_file_path = self._config.recipes_path / recipe_filename
-        
         if not recipe_file_path.is_file():
             raise LoaderError(f"Recipe file not found: {recipe_file_path}")
-
         try:
             recipe_data = yaml.safe_load(recipe_file_path.read_text(encoding='utf-8'))
             if not isinstance(recipe_data, dict):
                  raise LoaderError(f"Recipe file '{recipe_filename}' is empty or invalid.")
         except Exception as e:
             raise LoaderError(f"Failed to load or parse recipe '{recipe_file_path}': {e}") from e
-
-        print(f"✅ Assets for '{recipe_name}' loaded successfully.")
-        
-        return CompilationSources(
-            templates=templates,
-            dataschemas=dataschemas,
-            blocks=blocks,
-            recipe=recipe_data
+        print(f"✅ '{recipe_name}' loaded successfully.")
+        return CompilationTask(
+            recipe_name=recipe_name,
+            sources=recipe_data
         )
-
-    def load_compilation_tasks(self) -> Iterator[Tuple[str, CompilationSources]]:
-        print("🚀 Starting batch asset loading process...")
-        
-        templates = self._get_templates()
-        dataschemas = self._get_dataschemas()
-        blocks = self._get_blocks()
-        
-        print("\n🔍 Searching for all recipes to compile...")
-        recipe_path = self._config.recipes_path
-        if not recipe_path.is_dir():
-            print(f"⚠️ Recipe directory not found, nothing to compile: {recipe_path}")
-            return
-
-        recipe_files = list(recipe_path.glob("*.recipe.y*ml"))
-        if not recipe_files:
-            print("ℹ️ No recipe files found.")
-            return
-
-        for recipe_file in recipe_files:
-            recipe_name = recipe_file.name.split('.recipe')[0]
-            try:
-                recipe_data = yaml.safe_load(recipe_file.read_text(encoding='utf-8'))
-                if not recipe_data:
-                    print(f"    - Skipping empty recipe file: {recipe_file.name}")
-                    continue
-                
-                sources = CompilationSources(
-                    templates=templates,
-                    dataschemas=dataschemas,
-                    blocks=blocks,
-                    recipe=recipe_data
-                )
-                yield recipe_name, sources
-            except Exception as e:
-                print(f"⚠️ Failed to load or parse recipe '{recipe_file}', skipping. Error: {e}")
-        
-        print("\n✅ All compilation tasks prepared.")
 
     def _get_templates(self) -> Dict[str, str]:
         if self._templates_cache is None:
